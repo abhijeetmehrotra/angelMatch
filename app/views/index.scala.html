@@ -1,12 +1,75 @@
-@()
+    @()
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+            <!-- Latest compiled and minified CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 
-@main("Welcome to Play") {
-    <script type='text/javascript' src='@routes.Assets.at("javascripts/index.js")'></script>
+            <!-- jQuery library -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 
-    <ul id="persons"></ul>
+            <!-- Latest compiled JavaScript -->
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
-    <form method="POST" action="@routes.Application.addPerson()">
-        <input type="text" name="name"/>
-        <button>Add Person</button>
-    </form>
-}
+
+
+        <script type="text/javascript">
+
+                // Setup an event listener to make an API call once auth is complete
+                function onLinkedInLoad() {
+                    IN.Event.on(IN, "auth", getProfileData);
+                }
+
+                // Handle the successful return from the API call
+                function onSuccess(data) {
+                    console.log(data);
+                }
+
+                // Handle an error response from the API call
+                function onError(error) {
+                    console.log(error);
+                }
+
+                // Use the API call wrapper to request the member's basic profile data
+                function getProfileData() {
+                    IN.API.Raw("/people/~:(id,first-name,last-name,location,volunteer,num-connections,picture-url,skills)").result(onSuccess).error(onError);
+                }
+
+        </script>
+        <style>
+            body{
+                text-align: center;
+            }
+        </style>
+    </head>
+    <body>
+        <script type="text/javascript" src="//platform.linkedin.com/in.js">
+                api_key:   81ybwgwl5bfuu9
+                onLoad:    onLinkedInLoad
+                authorize: true
+        </script>
+
+        <div class="jumbotron">
+            <h1 style="text-align: center;">AngelMatch</h1>
+            <h2 style="text-align: center;">Angels to orgs</h2>
+        </div>
+        <a href="https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=81ybwgwl5bfuu9&redirect_uri=http%3A%2F%2Flocalhost:9000&state=987654321&scope=r_basicprofile%20r_fullprofile%20r_emailaddress">Sign in with LinkedIn</a>
+        <br>
+        <div>
+                blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah<br>
+                blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah<br>
+                blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah<br>
+                blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah<br>
+                blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah<br>
+                blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah<br>
+                blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah<br>
+                blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah<br>
+                blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah<br>
+                <br><br><br><br><br><br><br>
+        </div>
+    </body>
+    <div id="footer">
+        Copyright 2016-17 AngelMatch
+    </div>
+</html>
