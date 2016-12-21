@@ -21,19 +21,6 @@ public class Application extends Controller {
         return ok(index.render());
     }
 
-    @Transactional
-    public Result addPerson() {
-        Volunteer volunteer = formFactory.form(Volunteer.class).bindFromRequest().get();
-        JPA.em().persist(volunteer);
-        return redirect(routes.Application.index());
-    }
-
-    @Transactional(readOnly = true)
-    public Result getPersons() {
-        List<Volunteer> volunteers = (List<Volunteer>) JPA.em().createQuery("select p from Person p").getResultList();
-        return ok(toJson(volunteers));
-    }
-
     public Result showVolunteerPage(){
         return ok(volunteer.render());
     }

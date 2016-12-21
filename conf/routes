@@ -4,12 +4,10 @@
 
 # Home page
 GET     /                           controllers.Application.index()
-POST    /person                     controllers.Application.addPerson()
-GET     /persons                    controllers.Application.getPersons()
 GET     /volunteer                  controllers.Application.showVolunteerPage()
-GET     /organization               controllers.Application.organization
-GET     /vsearch                    controllers.Application.
-GET     /osearch
+GET     /organization               controllers.Application.showOrganizationPage()
+GET     /vsearch                    controllers.Application.showVolunteerSearchPage()
+GET     /osearch                    controllers.Application.showOrganizationSearchPage()
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)
