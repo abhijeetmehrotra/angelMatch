@@ -1,3 +1,4 @@
+@(fname:String,lname:String,email:String,id:String,location:String,numCons:String,imgurl:String)
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -23,13 +24,14 @@
         <h3>Complete your Volunteer profile</h3>
         <hr>
         <form name="vProfileForm" id="vProfileForm" action="">
-            ID:<input type="text" id="vid" name="vid" value="prefilled ID"><br>
-            Fname:<input type="text" id="fname" name="fname" value="prefilled First Name"><br>
-            Lname:<input type="text" id="lname" name="lname" value="prefilled Last Name"><br>
-            Location:<input type="text" id="location" name="location" value="prefilled location"><br>
-            Email: <input type="text" id="email" name="email" value="prefilled email"><br>
+            ID:<input type="text" id="vid" name="vid" value=@id><br>
+            Fname:<input type="text" id="fname" name="fname" value=@fname><br>
+            Lname:<input type="text" id="lname" name="lname" value=@lname><br>
+            Location:<input type="text" id="location" name="location" value=@location><br>
+            Email: <input type="text" id="email" name="email" value=@email><br>
+            Image URL: <input type="text" id="imgurl" name="imgurl" value=@imgurl><br>
             Skills(Comma separated):<textarea name="skills" id="skills"></textarea><br>
-            Number of followers: <input id="numFollowers" name="numFollowers" value="prefilled hidden"><br>
+            Number of Connections: <input id="numFollowers" name="numFollowers" value=@numCons><br>
             Volunteer Issues you support:<br>
                 <input type="checkbox" name="issuesSupported[]"  value="1">issue1<br>
                 <input type="checkbox" name="issuesSupported[]"  value="2">issue2<br>

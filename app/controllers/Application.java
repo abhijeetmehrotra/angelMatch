@@ -8,6 +8,8 @@ import play.mvc.Result;
 import views.html.*;
 
 import javax.inject.Inject;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.List;
 
 import static play.libs.Json.toJson;
@@ -36,16 +38,19 @@ public class Application extends Controller {
         return ok(searchOrganization.render());
     }
 
-    public Result volunteerCompleteProfile(String fname,String lname,String vid,String location,String numCons, String imgURL){
+    public Result volunteerCompleteProfile(String fname,String lname,String email, String vid,String location,String numCons, String imgURL) throws UnsupportedEncodingException {
         System.out.println(fname);
         System.out.println(lname);
         System.out.println(vid);
         System.out.println(location);
+        URLDecoder u = new URLDecoder();
+        String cleanLocation = u.decode(location, "UTF-8");
         System.out.println(numCons);
         System.out.println(imgURL);
+        System.out.println(email);
 
 //        PRINT "EXISTS' IF ES HAS USER ELSE PRINT NEW USER  (ABHIJEET)
 
-        return ok(vfillprofile.render());
+        return ok(vfillprofile.render(fname,lname,email,vid,cleanLocation,numCons,imgURL));
     }
 }

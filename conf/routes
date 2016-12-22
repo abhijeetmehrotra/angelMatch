@@ -8,7 +8,7 @@ GET     /volunteer                  controllers.Application.showVolunteerPage()
 GET     /organization               controllers.Application.showOrganizationPage()
 GET     /vsearch                    controllers.Application.showVolunteerSearchPage()
 GET     /osearch                    controllers.Application.showOrganizationSearchPage()
-GET     /vfillprofile               controllers.Application.volunteerCompleteProfile(fname:String,lname:String,id:String,location:String,numCons:String,imgURL:String)
+GET     /vfillprofile               controllers.Application.volunteerCompleteProfile(fname:String,lname:String,email:String,id:String,location:String,numCons:String,imgURL:String)
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)

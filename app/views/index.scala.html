@@ -1,4 +1,4 @@
-    @()
+@()
 <!DOCTYPE html>
 <html>
     <head>
@@ -16,24 +16,27 @@
                 api_key:   81ybwgwl5bfuu9
                 onLoad:    onLinkedInLoad
                 authorize: true
+                scope: r_basicprofile r_emailaddress
         </script>
-
-
 
         <script type="text/javascript">
 
                 // Setup an event listener to make an API call once auth is complete
+//                $(document).ready(onLinkedInLoad());
+
                 function onLinkedInLoad() {
+                    alert("in linkedin load!");
                     IN.Event.on(IN, "auth", getProfileData);
                 }
 
                 // Handle the successful return from the API call
                 function onSuccess(data) {
+                    alert("on success!");
                     console.log(data);
                     console.log(data.firstName);
                     var currentURL = window.location.href;
                     var parts = currentURL.split('/');
-                    baseURL="";
+                    var baseURL= "";
                     for(var iter = 0; iter <= parts.length - 2; iter++)
                     {
                         baseURL += parts[iter]+"/";
@@ -44,19 +47,22 @@
                     var id = data.id.toString();
                     var location = data.location.name.toString();
                     var numCons = data.numConnections.toString();
-                    var imgURL = data.pictureUrl.toString()
+                    var imgURL = data.pictureUrl.toString();
+                    var email = data.emailAddress.toString();
 
-                    window.location.replace(baseURL+"vfillprofile?fname="+fname+"&lname="+lname+"&id="+id+"&location="+location+"&numCons="+numCons+"&imgURL="+imgURL);
+//                    window.location.replace(baseURL+"vfillprofile?fname="+fname+"&lname="+lname+"&email="+email+"&id="+id+"&location="+location+"&numCons="+numCons+"&imgURL="+imgURL);
                 }
 
                 // Handle an error response from the API call
                 function onError(error) {
+                    alert("on error!");
                     console.log(error);
                 }
 
                 // Use the API call wrapper to request the member's basic profile data
                 function getProfileData() {
-                    IN.API.Raw("/people/~:(id,first-name,last-name,location,volunteer,num-connections,picture-url,skills)").result(onSuccess).error(onError);
+                    alert("get profile data!");
+                    IN.API.Raw("/people/~:(id,email-address,first-name,last-name,location,volunteer,num-connections,picture-url,skills)").result(onSuccess).error(onError);
                 }
 
         </script>
@@ -71,9 +77,19 @@
 
         <div class="jumbotron">
             <h1 style="text-align: center;">AngelMatch</h1>
-            <h2 style="text-align: center;">Angels to orgs</h2>
+            <h2 style="text-align: center;">Matching Angels to Organizations</h2>
         </div>
-        <a href="https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=81ybwgwl5bfuu9&redirect_uri=http%3A%2F%2Flocalhost:9000%2Fvfillprofile&state=987654321&scope=r_basicprofile%20r_emailaddress">Sign in with LinkedIn</a>
+        <div class="row">
+            <div class="col-sm-6">
+                <h2>Volunteers</h2>
+                <script type="in/Login"></script>
+            </div>
+            <div class="col-sm-6">
+                <h2>Organizations</h2>
+                <a href="#">Sign In As Organization</a>
+            </div>
+        </div>
+
         <br>
         <div>
                 blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah<br>
