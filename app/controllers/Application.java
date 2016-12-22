@@ -6,6 +6,12 @@ import play.db.jpa.Transactional;
 import play.mvc.Controller;
 import play.mvc.Result;
 import views.html.*;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Map;
 
 import javax.inject.Inject;
 import java.io.UnsupportedEncodingException;
@@ -49,7 +55,31 @@ public class Application extends Controller {
         System.out.println(imgURL);
         System.out.println(email);
 
-//        PRINT "EXISTS' IF ES HAS USER ELSE PRINT NEW USER  (ABHIJEET)
+        try {
+            HttpURLConnection con = (HttpURLConnection) new URL("http://search-angelmatch-6k3puk6rfr3ks6deaxk6qmgfgm.us-east-1.es.amazonaws.com/data/volunteer/_search").openConnection();
+            con.setRequestMethod("GET");
+            con.setDoOutput(true);
+            con.setRequestProperty("Content-Type", "application/json");
+            con.setRequestProperty("Accept", "application/json");
+            con.connect();
+
+            String query =  "{ \"query\": { \"term\":{ \"name\": \""+vid+"\"} } }";
+            byte[] outputBytes = query.getBytes("UTF-8");
+            OutputStream os = con.getOutputStream();
+            os.write(outputBytes);
+
+            os.close();
+            System.out.println(con.getResponseMessage());
+
+        } catch (MalformedURLException e1) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
+        } catch (IOException e1) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
+        }
+
+
 
         return ok(vfillprofile.render(fname,lname,email,vid,cleanLocation,numCons,imgURL));
     }
