@@ -10,5 +10,8 @@ GET     /vsearch                    controllers.Application.showVolunteerSearchP
 GET     /osearch                    controllers.Application.showOrganizationSearchPage()
 GET     /vfillprofile               controllers.Application.volunteerCompleteProfile(fname:String,lname:String,email:String,id:String,location:String,numCons:String,imgURL:String,industry:String)
 POST    /processVolunteerForm       controllers.Application.processVolunteerForm()
+POST    /processOrgForm             controllers.Application.processOrgForm()
+GET     /ofillprofile               controllers.Application.orgCompleteProfile()
+POST    /addevent                   controllers.Application.addEvent()
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)

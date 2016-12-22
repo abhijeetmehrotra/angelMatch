@@ -10,16 +10,38 @@
 
             <!-- Latest compiled JavaScript -->
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+        <style>
+        body{
+            text-align: center;
+        }
+        </style>
 
     </head>
     <body>
-        <div class="container">
-            <div class="jumbotron">
-                <h1>AngelMatch</h1>
-                <p>Matching Volunteers to Organizations</p>
+        <h1>AngelMatch  <small>Matching Volunteers to Organizations</small></h1>
+        <hr>
+        <div class="row">
+            <div class="col-sm-6">
+                <h2> Organization Profile </h2>
             </div>
-            <p>Org page</p>
-            <p>This is another text.</p>
+            <div class="col-sm-6">
+                <h2> Add Event </h2>
+                <form method="POST" action="@routes.Application.addEvent()">
+                Event Name: <input type="text" id="event_name" name="event_name"><br>
+                Event Date: <input type="date" id="event_date" name="event_date"><br>
+                    Time From:<input type="time" id="eventStartTime" name="eventStartTime"><br>
+                    Time   To:<input type="time" id="eventEndTime" name="eventEndTime"><br>
+                Skills needed(Comma separated):<input type="text" id="event_skills" name="event_skills">
+                    <input type="submit">
+                </form>
+            </div>
         </div>
+        <hr>
+        <div class="row">
+            <div class="col-sm-12">
+                <h2>Current Open Events</h2>
+            </div>
+        </div>
+        <hr>
     </body>
 </html>

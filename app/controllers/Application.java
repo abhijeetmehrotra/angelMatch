@@ -261,4 +261,60 @@ public class Application extends Controller {
         }
         return true;
     }
+
+    public Result processOrgForm(){
+        DynamicForm orgData = formFactory.form().bindFromRequest();
+        String oid = orgData.get("org_id");
+        String name = orgData.get("name");
+        String location = orgData.get("location");
+        String email = orgData.get("email");
+        String[] issues = new String[7];
+        issues[0] = orgData.get("we");
+        issues[1] = orgData.get("ce");
+        issues[2] = orgData.get("lg");
+        issues[3] = orgData.get("vet");
+        issues[4] = orgData.get("hs");
+        issues[5] = orgData.get("sa");
+        issues[6] = orgData.get("aw");
+        StringBuilder issuesString = new StringBuilder();
+        for(int i=0;i<issues.length;i++){
+            if(issues[i]!=null){
+                issuesString.append(issues[i]);
+                issuesString.append(",");
+            }
+        }
+        String issuesSupported = issuesString.toString();
+        issuesSupported = issuesSupported.substring(0,issuesSupported.length()-1);
+
+        String operationYears = orgData.get("yearsOperation");
+        System.out.println(oid);
+        System.out.println(name);
+        System.out.println(email);
+        System.out.println(location);
+        System.out.println(operationYears);
+        System.out.println(issuesSupported);
+        /////////////////////////////////////////
+        /////// Push to ES Here (Abhijeet) //////
+        /// DONT FORGET BLANK START END TIMES////
+        /////////////////////////////////////////
+        return(ok(organization.render()));
+    }
+
+    public Result addEvent(){
+        DynamicForm eventData = formFactory.form().bindFromRequest();
+        String eventName = eventData.get("event_name");
+        String eventDate = eventData.get("event_date");
+        String eventStartTime = eventData.get("eventStartTime");
+        String eventEndTime = eventData.get("eventEndTime");
+        String eventSkills = eventData.get("eventSkills");
+
+        /////////////////////////////////////////////////////////////
+        /////// Push to ES Here (Abhijeet) //////////////////////////
+        // for now push to org with any NAME and other properties ///
+        /////////////////////////////////////////////////////////////
+        return ok(organization.render());
+    }
+    public Result orgCompleteProfile(){
+        return ok(ofillprofile.render());
+    }
 }
