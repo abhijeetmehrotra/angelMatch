@@ -25,13 +25,11 @@
 //                $(document).ready(onLinkedInLoad());
 
                 function onLinkedInLoad() {
-                    alert("in linkedin load!");
                     IN.Event.on(IN, "auth", getProfileData);
                 }
 
                 // Handle the successful return from the API call
                 function onSuccess(data) {
-                    alert("on success!");
                     console.log(data);
                     console.log(data.firstName);
                     var currentURL = window.location.href;
@@ -49,20 +47,19 @@
                     var numCons = data.numConnections.toString();
                     var imgURL = data.pictureUrl.toString();
                     var email = data.emailAddress.toString();
+                    var industry = data.industry.toString();
 
-                    window.location.replace(baseURL+"vfillprofile?fname="+fname+"&lname="+lname+"&email="+email+"&id="+id+"&location="+location+"&numCons="+numCons+"&imgURL="+imgURL);
+                    window.location.replace(baseURL+"vfillprofile?fname="+fname+"&lname="+lname+"&email="+email+"&id="+id+"&location="+location+"&numCons="+numCons+"&imgURL="+imgURL+"&industry="+industry);
                 }
 
                 // Handle an error response from the API call
                 function onError(error) {
-                    alert("on error!");
                     console.log(error);
                 }
 
                 // Use the API call wrapper to request the member's basic profile data
                 function getProfileData() {
-                    alert("get profile data!");
-                    IN.API.Raw("/people/~:(id,email-address,first-name,last-name,location,volunteer,num-connections,picture-url,skills)").result(onSuccess).error(onError);
+                    IN.API.Raw("/people/~:(id,email-address,first-name,last-name,industry,location,volunteer,num-connections,picture-url,skills)").result(onSuccess).error(onError);
                 }
 
         </script>

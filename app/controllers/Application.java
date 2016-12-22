@@ -13,6 +13,8 @@ import java.net.URL;
 import javax.inject.Inject;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Application extends Controller {
 
@@ -38,7 +40,7 @@ public class Application extends Controller {
         return ok(searchOrganization.render());
     }
 
-    public Result volunteerCompleteProfile(String fname,String lname,String email, String vid,String location,String numCons, String imgURL) throws UnsupportedEncodingException {
+    public Result volunteerCompleteProfile(String fname,String lname,String email, String vid,String location,String numCons, String imgURL, String industry) throws UnsupportedEncodingException {
         System.out.println(fname);
         System.out.println(lname);
         System.out.println(vid);
@@ -48,6 +50,7 @@ public class Application extends Controller {
         System.out.println(numCons);
         System.out.println(imgURL);
         System.out.println(email);
+        System.out.println(industry);
 
         try {
             HttpURLConnection con = (HttpURLConnection) new URL("http://search-angelmatch-6k3puk6rfr3ks6deaxk6qmgfgm.us-east-1.es.amazonaws.com/data/volunteer/_search").openConnection();
@@ -72,7 +75,7 @@ public class Application extends Controller {
             // TODO Auto-generated catch block
             e1.printStackTrace();
         }
-        return ok(vfillprofile.render(fname,lname,email,vid,cleanLocation,numCons,imgURL));
+        return ok(vfillprofile.render(fname,lname,email,vid,cleanLocation,numCons,imgURL,industry));
     }
 
     public Result processVolunteerForm(){
@@ -82,11 +85,22 @@ public class Application extends Controller {
         String lastName = volunteerData.get("lname");
         String location = volunteerData.get("location");
         String email = volunteerData.get("email");
+        String industry = volunteerData.get("industry");
         String imageURL = volunteerData.get("imageURL");
         String skills = volunteerData.get("skills");
         String endorsements = volunteerData.get("endorsements");
         String numCons = volunteerData.get("numCons");
-        String issuesSupported = volunteerData.get("issuesSupported");
+        String we = volunteerData.get("we");
+        String ce = volunteerData.get("ce");
+        String lg = volunteerData.get("lg");
+        String vet = volunteerData.get("vet");
+        String hs = volunteerData.get("hs");
+        String sa = volunteerData.get("sa");
+        String aw = volunteerData.get("aw");
+        String issuesSupported = "";
+        if(we!=null){
+            issuesSupported+=we;
+        }
         String yearsExperience = volunteerData.get("yearsExperience");
         String d1 = volunteerData.get("ts1");
         String tf1 = volunteerData.get("ts1_from");
@@ -119,6 +133,7 @@ public class Application extends Controller {
         System.out.println(d3);
         System.out.println(tf3);
         System.out.println(tt3);
+        System.out.println(industry);
 
         return(ok(volunteer.render()));
     }

@@ -1,4 +1,4 @@
-@(fname:String,lname:String,email:String,id:String,location:String,numCons:String,imgurl:String)
+@(fname:String,lname:String,email:String,id:String,location:String,numCons:String,imgurl:String,industry:String)
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -28,19 +28,20 @@
             Fname:<input type="text" id="fname" name="fname" value=@fname><br>
             Lname:<input type="text" id="lname" name="lname" value=@lname><br>
             Location:<input type="text" id="location" name="location" value=@location><br>
+            Industry: <input type="text" name="industry" id="industry" value=@industry>
             Email: <input type="text" id="email" name="email" value=@email><br>
             Image URL: <input type="text" id="imgurl" name="imgurl" value=@imgurl><br>
             Skills(Comma separated):<textarea name="skills" id="skills"></textarea><br>
             Endorsements(Comma separated):<textarea name="endorsements" id="endorsements"></textarea><br>
             Number of Connections: <input id="numCons" name="numCons" value=@numCons><br>
             Volunteer Issues you support:<br>
-                <input type="checkbox" name="issuesSupported[]"  value="1">issue1<br>
-                <input type="checkbox" name="issuesSupported[]"  value="2">issue2<br>
-                <input type="checkbox" name="issuesSupported[]"  value="3">issue3<br>
-                <input type="checkbox" name="issuesSupported[]"  value="4">issue4<br>
-                <input type="checkbox" name="issuesSupported[]"  value="5">issue5<br>
-                <input type="checkbox" name="issuesSupported[]"  value="6">issue6<br>
-                <input type="checkbox" name="issuesSupported[]"  value="7">issue7<br>
+                <input type="checkbox" name="we" id="we" value="Women Empowerment">Women Empowerment<br>
+                <input type="checkbox" name="ce"  id="ce" value="Child Education">Child Education<br>
+                <input type="checkbox" name="lg"  id="lg" value="LBGTQ">LBGTQ<br>
+                <input type="checkbox" name="vet"  id="vet" value="Veteran">Veteran<br>
+                <input type="checkbox" name="hs"  id="hs" value="Homeless Shelter">Homeless Shelter<br>
+                <input type="checkbox" name="sa"  id="sa" value="Substance Abuse">Substance Abuse<br>
+                <input type="checkbox" name="aw"  id="aw" value="Animal Welfare">Animal Welfare<br>
             Volunteer experience in years: <input type="number" id="yearsExperience" name="yearsExperience"><br>
             Next 3 timeslots when you're free:<br>
                 Date:<input type="date" id="ts1" name="ts1">From:<input type="time" id="ts1_from" name="ts1_from">To:<input type="time" name="ts1_to" id="ts1_to"><br>
