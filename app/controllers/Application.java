@@ -1,4 +1,8 @@
 package controllers;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+
 import play.data.DynamicForm;
 import play.data.FormFactory;
 import play.mvc.Controller;
@@ -60,29 +64,29 @@ public class Application extends Controller {
         System.out.println(email);
         System.out.println(industry);
 
-        try {
-            HttpURLConnection con = (HttpURLConnection) new URL("http://search-angelmatch-6k3puk6rfr3ks6deaxk6qmgfgm.us-east-1.es.amazonaws.com/data/volunteer/_search").openConnection();
-            con.setRequestMethod("GET");
-            con.setDoOutput(true);
-            con.setRequestProperty("Content-Type", "application/json");
-            con.setRequestProperty("Accept", "application/json");
-            con.connect();
-
-            String query =  "{ \"query\": { \"term\":{ \"name\": \""+vid+"\"} } }";
-            byte[] outputBytes = query.getBytes("UTF-8");
-            OutputStream os = con.getOutputStream();
-            os.write(outputBytes);
-
-            os.close();
-            System.out.println(con.getResponseMessage());
-
-        } catch (MalformedURLException e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
-        } catch (IOException e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
-        }
+//        try {
+//            HttpURLConnection con = (HttpURLConnection) new URL("http://search-angelmatch-6k3puk6rfr3ks6deaxk6qmgfgm.us-east-1.es.amazonaws.com/data/volunteer/_search").openConnection();
+//            con.setRequestMethod("GET");
+//            con.setDoOutput(true);
+//            con.setRequestProperty("Content-Type", "application/json");
+//            con.setRequestProperty("Accept", "application/json");
+//            con.connect();
+//
+//            String query =  "{ \"query\": { \"term\":{ \"name\": \""+vid+"\"} } }";
+//            byte[] outputBytes = query.getBytes("UTF-8");
+//            OutputStream os = con.getOutputStream();
+//            os.write(outputBytes);
+//
+//            os.close();
+//            System.out.println(con.getResponseMessage());
+//
+//        } catch (MalformedURLException e1) {
+//            // TODO Auto-generated catch block
+//            e1.printStackTrace();
+//        } catch (IOException e1) {
+//            // TODO Auto-generated catch block
+//            e1.printStackTrace();
+//        }
         return ok(vfillprofile.render(fname,lname,email,vid,cleanLocation,numCons,imgURL,industry));
     }
 
@@ -293,14 +297,50 @@ public class Application extends Controller {
         System.out.println(location);
         System.out.println(operationYears);
         System.out.println(issuesSupported);
-        /////////////////////////////////////////
-        /////// Push to ES Here (Abhijeet) //////
-        /// DONT FORGET BLANK START END TIMES////
-        /////////////////////////////////////////
+
+        try {
+            HttpURLConnection con = (HttpURLConnection) new URL("http://search-angelmatch-6k3puk6rfr3ks6deaxk6qmgfgm.us-east-1.es.amazonaws.com/data_org/organization").openConnection();
+            con.setRequestMethod("POST");
+            con.setDoOutput(true);
+            con.setRequestProperty("Content-Type", "application/json");
+            con.setRequestProperty("Accept", "application/json");
+            con.connect();
+
+            StringBuilder user = new StringBuilder();
+            user.append("{ \"uid\":\"");
+            user.append(System.currentTimeMillis() + oid.trim());
+            user.append("\", \"id\":\"");
+            user.append(oid);
+            user.append("\", \"name\":\"");
+            user.append(name);
+            user.append("\", \"email\":\"");
+            user.append(email);
+            user.append("\", \"num_years\":");
+            user.append(operationYears);
+            user.append(", \"location\":\"");
+            user.append(location);
+            user.append("\", \"causes_supported\":[\"");
+            user.append(issuesSupported);
+            user.append("\"] } ");
+            String query = user.toString();
+            byte[] outputBytes = query.getBytes("UTF-8");
+            OutputStream os = con.getOutputStream();
+            os.write(outputBytes);
+
+            os.close();
+            System.out.println("ORG_POSTED"+con.getResponseCode());
+        } catch (MalformedURLException e1) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
+        } catch (IOException e1) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
+        }
+
         return(ok(organization.render()));
     }
 
-    public Result addEvent(){
+    public Result addEvent() throws org.json.simple.parser.ParseException {
         DynamicForm eventData = formFactory.form().bindFromRequest();
         String eventName = eventData.get("event_name");
         String eventDate = eventData.get("event_date");
@@ -308,10 +348,91 @@ public class Application extends Controller {
         String eventEndTime = eventData.get("eventEndTime");
         String eventSkills = eventData.get("eventSkills");
 
-        /////////////////////////////////////////////////////////////
-        /////// Push to ES Here (Abhijeet) //////////////////////////
-        // for now push to org with any NAME and other properties ///
-        /////////////////////////////////////////////////////////////
+        String org_id = "12345678"; //TODO: replace with actual org_id
+
+        try {
+            HttpURLConnection con = (HttpURLConnection) new URL("http://search-angelmatch-6k3puk6rfr3ks6deaxk6qmgfgm.us-east-1.es.amazonaws.com/data_org/organization/_search").openConnection();
+            con.setRequestMethod("GET");
+            con.setDoOutput(true);
+            con.setRequestProperty("Content-Type", "application/json");
+            con.setRequestProperty("Accept", "application/json");
+            con.connect();
+
+            String query =  "{ \"query\": { \"term\":{ \"id\": \""+org_id+"\"} } }";
+            byte[] outputBytes = query.getBytes("UTF-8");
+            OutputStream os = con.getOutputStream();
+            os.write(outputBytes);
+
+            os.close();
+            System.out.println(con.getResponseMessage());
+            BufferedReader br = new BufferedReader(new InputStreamReader((con.getInputStream())));
+            StringBuilder sb = new StringBuilder();
+            String output;
+            while ((output = br.readLine()) != null) {
+                sb.append(output);
+            }
+            String responseString = sb.toString();
+
+            JSONParser parser = new JSONParser();
+            JSONObject json = (JSONObject) parser.parse(responseString);
+            JSONObject hitsInner = (JSONObject) json.get("hits");
+            JSONArray dataArray = (JSONArray) hitsInner.get("hits");
+            JSONObject firstObject = (JSONObject) dataArray.get(0);
+            JSONObject data = (JSONObject) firstObject.get("_source");
+
+            System.out.println(data.toString());
+
+            try {
+                HttpURLConnection con_new = (HttpURLConnection) new URL("http://search-angelmatch-6k3puk6rfr3ks6deaxk6qmgfgm.us-east-1.es.amazonaws.com/data_org/organization").openConnection();
+                con_new.setRequestMethod("POST");
+                con_new.setDoOutput(true);
+                con_new.setRequestProperty("Content-Type", "application/json");
+                con_new.setRequestProperty("Accept", "application/json");
+                con_new.connect();
+
+                StringBuilder user = new StringBuilder();
+                user.append("{ \"uid\":\"");
+                user.append(String.valueOf(System.currentTimeMillis()) + data.get("id"));
+                user.append("\", \"id\":\"");
+                user.append(data.get("id"));
+                user.append("\", \"name\":\"");
+                user.append(data.get("name"));
+                user.append("\", \"email\":\"");
+                user.append(data.get("email"));
+                user.append("\", \"num_years\":");
+                user.append(data.get("num_years"));
+                user.append(", \"location\":\"");
+                user.append(data.get("location"));
+                user.append("\", \"causes_supported\":[\"");
+                user.append(data.get("causes_supported"));
+                user.append("\"] } ");
+                String query_new = user.toString();
+                byte[] outputBytes_new = query_new.getBytes("UTF-8");
+                OutputStream os_new = con_new.getOutputStream();
+                os_new.write(outputBytes_new);
+
+                os.close();
+                System.out.println("ORG_POSTED"+con_new.getResponseCode());
+            } catch (MalformedURLException e1) {
+                // TODO Auto-generated catch block
+                e1.printStackTrace();
+            } catch (IOException e1) {
+                // TODO Auto-generated catch block
+                e1.printStackTrace();
+            }
+
+
+
+        } catch (MalformedURLException e1) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
+        } catch (IOException e1) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
+        }
+
+
+
         return ok(organization.render());
     }
     public Result orgCompleteProfile(){
