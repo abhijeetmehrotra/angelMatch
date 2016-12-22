@@ -27,7 +27,7 @@ org = {
   "event_from_date": "1482602400000",
   "event_to_date": "1482620400000",
   "num_volunteers": "5",
-  "skills": "MATLAB, Computer Science"
+  "skills": "MATLAB, Computer, Python"
 }
 
 orgskills = org["skills"]
@@ -68,6 +68,7 @@ uskills = defaultdict(list)
 index = 0
 unweighted_scores = []
 for person_skills in peopleArray.skills:
+    #print person_skills
     user_skills = person_skills.replace(' ', '_').replace(',_', ',').lower().split(',')
     unweighted_scores.append(w2v2.n_similarity(user_skills, orgskills))
     uskills[index].append(user_skills)
@@ -120,7 +121,7 @@ un_weighted_map = dict()
 weighted_map = dict()
 
 unwtc=0
-for val in np.abs(unweighted_scores):
+for val in unweighted_scores:
   un_weighted_map[unwtc] = val
   unwtc = unwtc + 1
 
@@ -132,8 +133,8 @@ for val in sad:
 sorted_uwt = sorted(un_weighted_map.items(), key=operator.itemgetter(1))
 sorted_wt = sorted(weighted_map.items(), key=operator.itemgetter(1))
 
-print sorted_wt[9995:10000]
-print sorted_uwt[9995:10000]
+# print sorted_wt[9995:]
+# print sorted_uwt[9995:]
 
 sorted_unweighted = np.sort(np.abs(unweighted_scores))
 sorted_weighted = np.sort(sad)
@@ -141,7 +142,30 @@ sorted_weighted = np.sort(sad)
 #write to csv
 with open('ranked_list.csv', 'wb') as csvfile:
   opwriter = csv.writer(csvfile)
-  for k, v in sorted_weighted.items():
-    opwriter.writerow([k,v])
+  for k, v in un_weighted_map.items():
+    #print k+1, v
+    opwriter.writerow([k+1,v])
 
+with open('ranked_lists.txt', 'w') as outfile:
+  json.dump(un_weighted_map, outfile)
+#json_ranked_list = json.dumps(un_weighted_map)
+#print json_ranked_list
+
+# print w2v2.n_similarity(peopleArray.skills[10000].replace(' ', '_').replace(',_', ',').lower().split(','), ['matlab', 'computer', 'python'])
+# print peopleArray.skills[10000]
+
+# print 'searching for user with skills: matlab, computer and python\n'
+
+# maxval = 0
+# unweighted_scores2 = []
+# for person_skills in peopleArray.skills:
+#     user_skills = person_skills.replace(' ', '_').replace(',_', ',').lower().split(',')
+#     sim = w2v2.n_similarity(user_skills, ['matlab', 'computer', 'python'])
+#     if (maxval < sim):
+#       print str(user_skills) + str(sim)
+#       maxval = sim
+#     unweighted_scores2.append(sim)
+
+# wtd2 = np.sort(unweighted_scores2)
+# print wtd2[9995:]
 
