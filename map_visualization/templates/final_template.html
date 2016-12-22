@@ -29,19 +29,22 @@
 
     <div id="map"></div>
     <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.12.2.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.6.0/underscore.js" type="text/javascript"></script>
     <script>
         var $SCRIPT_ROOT = {{ request.script_root|tojson|safe }}, map, markers = [];
 
-        // var infinity = function(){setInterval(function() {
-        //       $.getJSON($SCRIPT_ROOT + '/rt', {}, function(data) {
-        //         initializeStuff(data);
-        //       });
-        //       return false;
-        //     },10000)};
+        var infinity = function(){setInterval(function() {
+              $.getJSON($SCRIPT_ROOT + '/rt', {}, function(data) {
+                initializeStuff(data);
+              });
+              return false;
+            },10000)};
 
-        //infinity();
+        infinity();
 
       function initMap() {
+        geocoder = new google.maps.Geocoder();
+
         map = new google.maps.Map(document.getElementById('map'), {
           zoom: 3,
           center: {lat: 48.5602, lng: -119.5752}
@@ -131,16 +134,33 @@
         locations = [];
         text = [];
         deleteMarkers();
-        var size = result['hits']['hits'].length, r, a, b;
+        //locations.push({lat: 48.5602, lng: -119.5752});
+        //addMarker(locations[0], 'tempText');
+        var size = result['hits'].length, r, a, b;
 
         for (var i = 0;i<size; i++){
-          r = result['hits']['hits'][i];
-          a = r['_source']['coordinates'][0];
-          b = r['_source']['coordinates'][1];
-          c = r['_source']['text'].replace('\n', '');
-          locations.push({lat:b,lng:a});
-          text.push(c);
-          addMarker(locations[i], text[i]);
+          r = result['hits'][i];
+          a = r['_source']['location'];
+          console.log(a);
+          c = r['_source']['text'] || "SID";
+          c = c.replace('\n', '');
+
+          if (geocoder) {
+              geocoder.geocode({ 'address': a}, _.bind(function(results, status) {
+                if (status == google.maps.GeocoderStatus.OK) {
+                  if (status != google.maps.GeocoderStatus.ZERO_RESULTS) {
+                    loc = results[0].geometry.location;
+                    currloc = {lat:loc.lat(), lng:loc.lng()};
+                    this.locations.push(currloc);
+                    this.text.push(c);
+                    this.addMarker(currloc, c);
+                  }
+                }
+              }
+            , this));
+          }
+          //locations.push({lat:b,lng:a});
+          
         }
 
         var markerCluster = new MarkerClusterer(map, markers,

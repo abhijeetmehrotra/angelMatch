@@ -57,7 +57,7 @@ result = {
       ],
       "volunteer_experience": 2,
       "num_connections": 120,
-      "location": "New York",
+      "location": "Los Angeles",
       "causes_supported": [
         "LBGTQ,Old Age"
       ],
@@ -131,17 +131,18 @@ def parseRes(result):
 def rt():
   #the real time tweet logic
   #fetching the es instance
-  es = getESInstance()
+  # es = getESInstance()
 
-  #retrieving global keywords
-  global keywordGlobal
+  # #retrieving global keywords
+  # global keywordGlobal
 
-  #fetching based on keywords
-  if len(keywordGlobal) is not 0:
-    result = es.search(size=5000, index="tweep", body={"query": {"query_string": {"query": keywordGlobal}}})
-  else:
-    result = es.search(size=5000,index='tweep')
+  # #fetching based on keywords
+  # if len(keywordGlobal) is not 0:
+  #   result = es.search(size=5000, index="tweep", body={"query": {"query_string": {"query": keywordGlobal}}})
+  # else:
+  #   result = es.search(size=5000,index='tweep')
   
+  global result
   #returning returnecd result without rerender
   return jsonify(parseRes(result))
 
