@@ -35,4 +35,17 @@ public class Application extends Controller {
     public Result showOrganizationSearchPage(){
         return ok(searchOrganization.render());
     }
+
+    public Result volunteerCompleteProfile(String fname,String lname,String vid,String location,String numCons, String imgURL){
+        System.out.println(fname);
+        System.out.println(lname);
+        System.out.println(vid);
+        System.out.println(location);
+        System.out.println(numCons);
+        System.out.println(imgURL);
+
+//        PRINT "EXISTS' IF ES HAS USER ELSE PRINT NEW USER  (ABHIJEET)
+
+        return ok(vfillprofile.render());
+    }
 }
