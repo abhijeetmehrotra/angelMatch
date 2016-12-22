@@ -13,8 +13,13 @@ import java.net.URL;
 import javax.inject.Inject;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 public class Application extends Controller {
 
@@ -90,17 +95,23 @@ public class Application extends Controller {
         String skills = volunteerData.get("skills");
         String endorsements = volunteerData.get("endorsements");
         String numCons = volunteerData.get("numCons");
-        String we = volunteerData.get("we");
-        String ce = volunteerData.get("ce");
-        String lg = volunteerData.get("lg");
-        String vet = volunteerData.get("vet");
-        String hs = volunteerData.get("hs");
-        String sa = volunteerData.get("sa");
-        String aw = volunteerData.get("aw");
-        String issuesSupported = "";
-        if(we!=null){
-            issuesSupported+=we;
+        String[] issues = new String[7];
+        issues[0] = volunteerData.get("we");
+        issues[1] = volunteerData.get("ce");
+        issues[2] = volunteerData.get("lg");
+        issues[3] = volunteerData.get("vet");
+        issues[4] = volunteerData.get("hs");
+        issues[5] = volunteerData.get("sa");
+        issues[6] = volunteerData.get("aw");
+        StringBuilder issuesString = new StringBuilder();
+        for(int i=0;i<issues.length;i++){
+            if(issues[i]!=null){
+                issuesString.append(issues[i]);
+                issuesString.append(",");
+            }
         }
+        String issuesSupported = issuesSupported.toString();
+        issuesSupported = issuesSupported.substring(0,issuesSupported.length()-1);
         String yearsExperience = volunteerData.get("yearsExperience");
         String d1 = volunteerData.get("ts1");
         String tf1 = volunteerData.get("ts1_from");
@@ -111,6 +122,8 @@ public class Application extends Controller {
         String d3 = volunteerData.get("ts3");
         String tf3 = volunteerData.get("ts3_from");
         String tt3 = volunteerData.get("ts3_to");
+
+        long ts1start = convertToMillis()
 
         System.out.println("FORM SUBMITTED DATA");
         System.out.println(vid);
@@ -136,5 +149,12 @@ public class Application extends Controller {
         System.out.println(industry);
 
         return(ok(volunteer.render()));
+    }
+    public long convertToMillis(String day, String time) throws ParseException {
+        String time_slot = day + " " + time;
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        sdf.setTimeZone(TimeZone.getTimeZone("EST"));
+        Date date = sdf.parse(time_slot);
+        return date.getTime();
     }
 }
