@@ -340,13 +340,13 @@ public class Application extends Controller {
         return(ok(organization.render()));
     }
 
-    public Result addEvent() throws org.json.simple.parser.ParseException {
+    public Result addEvent() throws org.json.simple.parser.ParseException, ParseException {
         DynamicForm eventData = formFactory.form().bindFromRequest();
         String eventName = eventData.get("event_name");
         String eventDate = eventData.get("event_date");
         String eventStartTime = eventData.get("eventStartTime");
         String eventEndTime = eventData.get("eventEndTime");
-        String eventSkills = eventData.get("eventSkills");
+        String eventSkills = eventData.get("event_skills");
 
         String org_id = "12345678"; //TODO: replace with actual org_id
 
@@ -403,9 +403,21 @@ public class Application extends Controller {
                 user.append(data.get("num_years"));
                 user.append(", \"location\":\"");
                 user.append(data.get("location"));
-                user.append("\", \"causes_supported\":[\"");
+                user.append("\", \"skills\":[\"");
+                user.append(eventSkills);
+                user.append("\"], \"event_name\":\"");
+                user.append(eventName);
+                user.append("\", \"time_from\":");
+                long eStart = convertToMillis(eventDate,eventStartTime);
+                long eEnd = convertToMillis(eventDate,eventEndTime);
+                user.append(eStart);
+                user.append(", \"time_to\":");
+                user.append(eEnd);
+                user.append(", \"summary\":\"");
+                user.append("Lorem Ipsum"); //TODO: get summary
+                user.append("\", \"causes_supported\":");
                 user.append(data.get("causes_supported"));
-                user.append("\"] } ");
+                user.append(" }");
                 String query_new = user.toString();
                 byte[] outputBytes_new = query_new.getBytes("UTF-8");
                 OutputStream os_new = con_new.getOutputStream();
