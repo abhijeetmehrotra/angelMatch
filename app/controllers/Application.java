@@ -83,7 +83,7 @@ public class Application extends Controller {
         return ok(vfillprofile.render(fname,lname,email,vid,cleanLocation,numCons,imgURL,industry));
     }
 
-    public Result processVolunteerForm(){
+    public Result processVolunteerForm() throws ParseException {
         DynamicForm volunteerData = formFactory.form().bindFromRequest();
         String vid = volunteerData.get("vid");
         String firstName = volunteerData.get("fname");
@@ -110,7 +110,7 @@ public class Application extends Controller {
                 issuesString.append(",");
             }
         }
-        String issuesSupported = issuesSupported.toString();
+        String issuesSupported = issuesString.toString();
         issuesSupported = issuesSupported.substring(0,issuesSupported.length()-1);
         String yearsExperience = volunteerData.get("yearsExperience");
         String d1 = volunteerData.get("ts1");
@@ -122,8 +122,17 @@ public class Application extends Controller {
         String d3 = volunteerData.get("ts3");
         String tf3 = volunteerData.get("ts3_from");
         String tt3 = volunteerData.get("ts3_to");
-
-        long ts1start = convertToMillis()
+        long ts1start, ts1end, ts2start, ts2end, ts3start, ts3end;
+        try {
+             ts1start = convertToMillis(d1,tf1);
+             ts1end = convertToMillis(d1,tt1);
+             ts2start = convertToMillis(d2,tf2);
+             ts2end = convertToMillis(d2,tt2);
+             ts3start = convertToMillis(d3,tf3);
+             ts3end = convertToMillis(d3,tt3);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
 
         System.out.println("FORM SUBMITTED DATA");
         System.out.println(vid);
