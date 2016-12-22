@@ -4,7 +4,10 @@ import play.data.FormFactory;
 import play.mvc.Controller;
 import play.mvc.Result;
 import views.html.*;
+
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
@@ -83,7 +86,7 @@ public class Application extends Controller {
         return ok(vfillprofile.render(fname,lname,email,vid,cleanLocation,numCons,imgURL,industry));
     }
 
-    public Result processVolunteerForm() throws ParseException {
+    public Result processVolunteerForm() throws ParseException, IOException {
         DynamicForm volunteerData = formFactory.form().bindFromRequest();
         String vid = volunteerData.get("vid");
         String firstName = volunteerData.get("fname");
@@ -122,7 +125,7 @@ public class Application extends Controller {
         String d3 = volunteerData.get("ts3");
         String tf3 = volunteerData.get("ts3_from");
         String tt3 = volunteerData.get("ts3_to");
-        long ts1start, ts1end, ts2start, ts2end, ts3start, ts3end;
+        long ts1start=0, ts1end=0, ts2start=0, ts2end=0, ts3start=0, ts3end=0;
         try {
              ts1start = convertToMillis(d1,tf1);
              ts1end = convertToMillis(d1,tt1);
@@ -133,7 +136,62 @@ public class Application extends Controller {
         } catch (ParseException e) {
             e.printStackTrace();
         }
+        boolean exists = userExists(vid);
+        if(!exists) {
+            try {
+                HttpURLConnection con = (HttpURLConnection) new URL("http://search-angelmatch-6k3puk6rfr3ks6deaxk6qmgfgm.us-east-1.es.amazonaws.com/data/volunteer").openConnection();
+                con.setRequestMethod("POST");
+                con.setDoOutput(true);
+                con.setRequestProperty("Content-Type", "application/json");
+                con.setRequestProperty("Accept", "application/json");
+                con.connect();
 
+                StringBuilder user = new StringBuilder();
+                user.append("{ \"uid\":\"");
+                user.append(System.currentTimeMillis() + vid.trim());
+                user.append("\", \"id\":\"");
+                user.append(vid);
+                user.append("\", \"fname\":\"");
+                user.append(firstName);
+                user.append("\", \"lname\":\"");
+                user.append(lastName);
+                user.append("\", \"email\":\"");
+                user.append(email);
+                user.append("\", \"image_url\":\"");
+                user.append(imageURL);
+                user.append("\", \"skills\":[\"");
+                user.append(skills);
+                user.append("\"], \"endorsements\":[\"");
+                user.append(endorsements);
+                user.append("\"], \"volunteer_experience\":");
+                user.append(yearsExperience);
+                user.append(", \"num_connections\":");
+                user.append(numCons);
+                user.append(", \"location\":\"");
+                user.append(location);
+                user.append("\", \"causes_supported\":[\"");
+                user.append(issuesSupported);
+                user.append("\"], \"industry\":\"");
+                user.append(industry);
+                user.append("\", \"time_from\":");
+                user.append(ts1start);
+                user.append(", \"time_to\":");
+                user.append(ts1end);
+                user.append(" }");
+                String query = user.toString();
+                byte[] outputBytes = query.getBytes("UTF-8");
+                OutputStream os = con.getOutputStream();
+                os.write(outputBytes);
+
+                os.close();
+            } catch (MalformedURLException e1) {
+                // TODO Auto-generated catch block
+                e1.printStackTrace();
+            } catch (IOException e1) {
+                // TODO Auto-generated catch block
+                e1.printStackTrace();
+            }
+        }
         System.out.println("FORM SUBMITTED DATA");
         System.out.println(vid);
         System.out.println(firstName);
@@ -165,5 +223,42 @@ public class Application extends Controller {
         sdf.setTimeZone(TimeZone.getTimeZone("EST"));
         Date date = sdf.parse(time_slot);
         return date.getTime();
+    }
+
+    public boolean userExists(String id) throws IOException {
+        try {
+            HttpURLConnection con = (HttpURLConnection) new URL("http://search-angelmatch-6k3puk6rfr3ks6deaxk6qmgfgm.us-east-1.es.amazonaws.com/data/volunteer/_search").openConnection();
+            con.setRequestMethod("GET");
+            con.setDoOutput(true);
+            con.setRequestProperty("Content-Type", "application/json");
+            con.setRequestProperty("Accept", "application/json");
+            con.connect();
+
+            String query =  "{ \"query\": { \"term\":{ \"id\": \""+id+"\"} } }";
+            byte[] outputBytes = query.getBytes("UTF-8");
+            OutputStream os = con.getOutputStream();
+            os.write(outputBytes);
+
+            os.close();
+            BufferedReader br = new BufferedReader(new InputStreamReader((con.getInputStream())));
+            StringBuilder sb = new StringBuilder();
+            String output;
+            while ((output = br.readLine()) != null) {
+                sb.append(output);
+            }
+            if(sb.toString().contains("\"hits\":{\"total\":1,")){
+                return true;
+            }
+            return false;
+
+
+        } catch (MalformedURLException e1) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
+        } catch (IOException e1) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
+        }
+        return true;
     }
 }
