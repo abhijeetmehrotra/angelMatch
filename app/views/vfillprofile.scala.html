@@ -23,7 +23,7 @@
         <br>
         <h3>Complete your Volunteer profile</h3>
         <hr>
-        <form name="vProfileForm" id="vProfileForm" action="">
+        <form method="post" name="vProfileForm" id="vProfileForm" action="@routes.Application.processVolunteerForm()">
             ID:<input type="text" id="vid" name="vid" value=@id><br>
             Fname:<input type="text" id="fname" name="fname" value=@fname><br>
             Lname:<input type="text" id="lname" name="lname" value=@lname><br>
@@ -31,7 +31,8 @@
             Email: <input type="text" id="email" name="email" value=@email><br>
             Image URL: <input type="text" id="imgurl" name="imgurl" value=@imgurl><br>
             Skills(Comma separated):<textarea name="skills" id="skills"></textarea><br>
-            Number of Connections: <input id="numFollowers" name="numFollowers" value=@numCons><br>
+            Endorsements(Comma separated):<textarea name="endorsements" id="endorsements"></textarea><br>
+            Number of Connections: <input id="numCons" name="numCons" value=@numCons><br>
             Volunteer Issues you support:<br>
                 <input type="checkbox" name="issuesSupported[]"  value="1">issue1<br>
                 <input type="checkbox" name="issuesSupported[]"  value="2">issue2<br>
@@ -42,9 +43,9 @@
                 <input type="checkbox" name="issuesSupported[]"  value="7">issue7<br>
             Volunteer experience in years: <input type="number" id="yearsExperience" name="yearsExperience"><br>
             Next 3 timeslots when you're free:<br>
-                Date:<input type="date" id="ts1">From:<input type="time" id="ts1_from">To:<input type="time" id="ts1_to"><br>
-                Date:<input type="date" id="ts2">From:<input type="time" id="ts2_from">To:<input type="time" id="ts2_to"><br>
-                Date:<input type="date" id="ts3">From:<input type="time" id="ts3_from">To:<input type="time" id="ts3_to"><br>
+                Date:<input type="date" id="ts1" name="ts1">From:<input type="time" id="ts1_from" name="ts1_from">To:<input type="time" name="ts1_to" id="ts1_to"><br>
+                Date:<input type="date" id="ts2" name="ts2">From:<input type="time" id="ts2_from" name="ts2_from">To:<input type="time" id="ts2_to" name="ts2_to"><br>
+                Date:<input type="date" id="ts3" name="ts3">From:<input type="time" id="ts3_from" name="ts3_from">To:<input type="time" id="ts3_to" name="ts3_to"><br>
             <input type="submit">
         </form>
     </body>

@@ -1,8 +1,6 @@
 package controllers;
-import models.Volunteer;
+import play.data.DynamicForm;
 import play.data.FormFactory;
-import play.db.jpa.JPA;
-import play.db.jpa.Transactional;
 import play.mvc.Controller;
 import play.mvc.Result;
 import views.html.*;
@@ -11,14 +9,10 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Map;
 
 import javax.inject.Inject;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.util.List;
-
-import static play.libs.Json.toJson;
 
 public class Application extends Controller {
 
@@ -78,9 +72,54 @@ public class Application extends Controller {
             // TODO Auto-generated catch block
             e1.printStackTrace();
         }
-
-
-
         return ok(vfillprofile.render(fname,lname,email,vid,cleanLocation,numCons,imgURL));
+    }
+
+    public Result processVolunteerForm(){
+        DynamicForm volunteerData = formFactory.form().bindFromRequest();
+        String vid = volunteerData.get("vid");
+        String firstName = volunteerData.get("fname");
+        String lastName = volunteerData.get("lname");
+        String location = volunteerData.get("location");
+        String email = volunteerData.get("email");
+        String imageURL = volunteerData.get("imageURL");
+        String skills = volunteerData.get("skills");
+        String endorsements = volunteerData.get("endorsements");
+        String numCons = volunteerData.get("numCons");
+        String issuesSupported = volunteerData.get("issuesSupported");
+        String yearsExperience = volunteerData.get("yearsExperience");
+        String d1 = volunteerData.get("ts1");
+        String tf1 = volunteerData.get("ts1_from");
+        String tt1 = volunteerData.get("ts1_to");
+        String d2 = volunteerData.get("ts2");
+        String tf2 = volunteerData.get("ts2_from");
+        String tt2 = volunteerData.get("ts2_to");
+        String d3 = volunteerData.get("ts3");
+        String tf3 = volunteerData.get("ts3_from");
+        String tt3 = volunteerData.get("ts3_to");
+
+        System.out.println("FORM SUBMITTED DATA");
+        System.out.println(vid);
+        System.out.println(firstName);
+        System.out.println(lastName);
+        System.out.println(location);
+        System.out.println(email);
+        System.out.println(imageURL);
+        System.out.println(skills);
+        System.out.println(endorsements);
+        System.out.println(numCons);
+        System.out.println(issuesSupported);
+        System.out.println(yearsExperience);
+        System.out.println(d1);
+        System.out.println(tf1);
+        System.out.println(tt1);
+        System.out.println(d2);
+        System.out.println(tf2);
+        System.out.println(tt2);
+        System.out.println(d3);
+        System.out.println(tf3);
+        System.out.println(tt3);
+
+        return(ok(volunteer.render()));
     }
 }
