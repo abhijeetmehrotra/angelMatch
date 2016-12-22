@@ -3,6 +3,14 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import com.amazonaws.AmazonClientException;
+import com.amazonaws.auth.AWSCredentials;
+import com.amazonaws.auth.profile.ProfileCredentialsProvider;
+import com.amazonaws.regions.Region;
+import com.amazonaws.regions.Regions;
+import com.amazonaws.services.simpleemail.AmazonSimpleEmailServiceClient;
+import com.amazonaws.services.simpleemail.model.*;
+
 import play.data.DynamicForm;
 import play.data.FormFactory;
 import play.mvc.Controller;
@@ -449,5 +457,72 @@ public class Application extends Controller {
     }
     public Result orgCompleteProfile(){
         return ok(ofillprofile.render());
+    }
+
+    public boolean sendEmail(String emailID,String text,String heading){
+        String FROM = "am4586@columbia.edu";
+        String TO = emailID;
+        String BODY = text;
+        String SUBJECT = heading;
+        AWSCredentials credentials = null;
+
+        // Construct an object to contain the recipient address.
+        Destination destination = new Destination().withToAddresses(new String[]{TO});
+
+        // Create the subject and body of the message.
+        Content subject = new Content().withData(SUBJECT);
+        Content textBody = new Content().withData(BODY);
+        Body body = new Body().withText(textBody);
+
+        // Create a message with the specified subject and body.
+        Message message = new Message().withSubject(subject).withBody(body);
+
+        // Assemble the email.
+        SendEmailRequest request = new SendEmailRequest().withSource(FROM).withDestination(destination).withMessage(message);
+
+        try
+        {
+            System.out.println("Attempting to send an email through Amazon SES by using the AWS SDK for Java...");
+
+            try {
+                credentials = new ProfileCredentialsProvider().getCredentials();
+            } catch (Exception e) {
+                throw new AmazonClientException(
+                        "Cannot load the credentials from the credential profiles file. " +
+                                "Please make sure that your credentials file is at the correct " +
+                                "location (~/.aws/credentials), and is in valid format.",
+                        e);
+            }
+
+
+            AmazonSimpleEmailServiceClient client = new AmazonSimpleEmailServiceClient();
+            Region REGION = Region.getRegion(Regions.US_EAST_1);
+            client.setRegion(REGION);
+            client.sendEmail(request);
+            System.out.println("Email sent!");
+            return true;
+        }
+        catch (Exception ex)
+        {
+            System.out.println("The email was not sent.");
+            System.out.println("Error message: " + ex.getMessage());
+            return false;
+        }
+    }
+
+    public Result orgLogin(){
+        return ok(orgLogin.render());
+    }
+
+    public Result checkOrgLogin(){
+        DynamicForm orgLoginData = formFactory.form().bindFromRequest();
+        String email = orgLoginData.get("orgEmail");
+
+        /////////////////////////////////////////////////////////////////////////////
+        /////// GET ALL ORG Data from ES (Abhijeet) /////////////////////////////////
+        ///////Store into an array so that I can send this to Org Profile page///////
+        /////////////////////////////////////////////////////////////////////////////
+
+        return ok(organization.render());
     }
 }

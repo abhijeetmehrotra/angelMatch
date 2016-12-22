@@ -16,3 +16,7 @@ libraryDependencies ++= Seq(
   "com.googlecode.json-simple" % "json-simple" % "1.1.1"
 )
 
+libraryDependencies ++= Seq(
+  "com.amazonaws" % "aws-java-sdk" % "1.11.46"
+)
+

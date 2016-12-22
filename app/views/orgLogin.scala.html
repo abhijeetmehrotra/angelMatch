@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+            <!-- Latest compiled and minified CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+            <!-- jQuery library -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+
+            <!-- Latest compiled JavaScript -->
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+        <style>
+        body{
+            text-align: center;
+            margin-right: 5%;
+            margin-left: 5%;
+        }
+        </style>
+
+    </head>
+    <body>
+        <h1>AngelMatch  <small>Matching Volunteers to Organizations</small></h1>
+        <hr>
+        <div class="row">
+            <div class="col-sm-12">
+                <h2> Organization Login </h2>
+                <form method="POST" action="@routes.Application.checkOrgLogin()">
+                    Email: <input type="text" id="orgEmail" name="orgEmail"><br>
+                    Password: <input type="password"><br>
+                <input type="submit" value="Login">
+                </form>
+            </div>
+        </div>
+        <hr>
+    </body>
+</html>
