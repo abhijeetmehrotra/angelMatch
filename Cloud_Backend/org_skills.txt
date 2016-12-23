@@ -1,0 +1,1 @@
+{"skills": ["\"Computer", "Python\""], "issues_supported": ["\"Women Empowerment", "Homeless\""]}

@@ -2,6 +2,10 @@ import simplejson
 import csv
 import numpy as np
 skill_dict = dict()
+from difflib import SequenceMatcher
+
+def similar(a, b):
+    return SequenceMatcher(None, a, b).ratio()
 
 def solve():
     default_skill_weight = 0
@@ -33,6 +37,7 @@ def solve():
     def preprocess_skill(skill):
         skill = skill.lower().strip()
         skill = skill.replace(" ", "_")
+        skill = skill.replace('"', '')
         #TODO tokenize
         return skill
 
@@ -56,10 +61,11 @@ def solve():
 
     skill_vector_size = len(skill_dict)
     user_score_dict = dict()
-    with open('org.json') as json_data:
+    with open('org_skills.txt') as json_data:
 
         d = json.load(json_data)
-        organization_required_skills = d['skills'].split(',')
+        print (d)
+        organization_required_skills = d['skills']
         organization_required_skills_vector = np.zeros(len(skill_dict) + 2)
         skill_weight = 1
         skill_weight_decay = 0.8
@@ -113,8 +119,11 @@ def solve():
                     continue
             #print ('candidate skill found...' , skill)
                 endorsement_count = int(endorsement_count)
+                for skill2 in skill_dict:
+                    similar_score = similar(skill, skill2)
+                    skill_vector[skill_dict[skill2]] += endorsement_count*similar_score + default_skill_weight
             #print ('endorsements', endorsement_count)
-                skill_vector[skill_dict[skill]] = endorsement_count  + default_skill_weight #+ skill_dict[skill]
+                skill_vector[skill_dict[skill]] += endorsement_count  + default_skill_weight #+ skill_dict[skill]
         #print (skill_vector)
             skill_vector[-2] = experience
             skill_vector[-1] = connections
@@ -124,7 +133,7 @@ def solve():
             score = np.dot(skill_vector, organization_required_skills_vector)
         #score=0
             print (score)
-            user_score_dict[person['id']] = score
+            user_score_dict[person['uid']] = score
 
         #print (skill_vector)
         #print (person['endorsments'])
