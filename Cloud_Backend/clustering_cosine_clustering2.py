@@ -142,6 +142,7 @@ def solve():
     #print (d['person'][1]['skills'])
     #print (d['person'][1]['endorsments'])
 #print ('skill_dict', skill_dict)
+    '''
     all_skills_file = open('all_skills.json','w')
     all_skills_file.write(str(skill_dict))
     print (user_score_dict)
@@ -164,7 +165,7 @@ def solve():
         prediction_dict[str(prediction)]  = prediction_dict[str(prediction)]  + 1
         predictions_file.write('\n')
 #print (prediction_dict)
-
+    '''
     import boto3
     region_name = 'us-east-1'
     queue_name = 'tweets'
@@ -174,7 +175,7 @@ def solve():
     aws_secret_access_key = '6BJm48+MhzF3iZbM4cn8GlmyanA0AMsBZEq9vmc/'
 #sqs = boto3.resource('sqs', region_name=region_name)
     sqs = boto3.resource('sqs',aws_access_key_id=aws_access_key_id,
-    aws_secret_access_key=aws_secret_access_key)
+    aws_secret_access_key=aws_secret_access_key, region_name= region_name)
     queue = sqs.get_queue_by_name(QueueName='machinepull')
     print (queue)
 

@@ -12,7 +12,7 @@ URL    = 'www.googhfdhdle.com'
 aws_access_key_id = 'AKIAIROYLKHSWD62VNOA'
 aws_secret_access_key = '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'
 
-conn = boto.sns.connect_to_region( REGION )
+#conn = boto.sns.connect_to_region( REGION )
 
 #pub = conn.publish(topic=TOPIC, message=URL)
 queueName = 'angelpush'
@@ -20,7 +20,7 @@ queueName = 'angelpush'
 
 
 sqs = boto3.resource('sqs',aws_access_key_id=aws_access_key_id,
-    aws_secret_access_key=aws_secret_access_key)
+    aws_secret_access_key=aws_secret_access_key, region_name  = REGION)
 print (sqs)
 queue = sqs.get_queue_by_name(QueueName=queueName)
 print (queue)
