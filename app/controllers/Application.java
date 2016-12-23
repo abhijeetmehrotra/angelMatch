@@ -252,21 +252,19 @@ public class Application extends Controller {
     }
 
     public String[] convertfromMillis(long millis) throws ParseException {
+        Date date=new Date(millis);
 
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(millis);
+        int mYear = date.getYear()+1900;
+        int mMonth = date.getMonth()+1;
+        int mDay = date.getDate();
 
-        int mYear = calendar.get(Calendar.YEAR);
-        int mMonth = calendar.get(Calendar.MONTH);
-        int mDay = calendar.get(Calendar.DAY_OF_MONTH);
+        int mHour = date.getHours();
+        int mMinute = date.getMinutes();
 
-        int mHour = calendar.get(Calendar.HOUR_OF_DAY);
-        int mMinute = calendar.get(Calendar.MINUTE);
-
-        String[] date = {mYear+"-"+mMonth+"-"+mDay,mHour+"-"+mMinute};
+        String[] retDate = {mYear+"-"+mMonth+"-"+mDay,mHour+"-"+mMinute};
 
 
-        return date;
+        return retDate;
     }
 
 
