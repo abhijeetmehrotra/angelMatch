@@ -110,7 +110,7 @@ while True:
     # if you don't receive any notifications the
     # messages_to_delete list will be empty
     if len(messages_to_delete) == 0:
-        break
+        print('hey')
     # delete messages to remove them from SQS queue
     # handle any errors
     else:
