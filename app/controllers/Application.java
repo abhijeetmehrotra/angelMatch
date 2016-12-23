@@ -19,6 +19,7 @@ import com.amazonaws.services.sqs.AmazonSQS;
 import com.amazonaws.services.sqs.AmazonSQSClient;
 import com.amazonaws.services.sqs.model.SendMessageRequest;
 
+import models.Organization;
 import play.data.DynamicForm;
 import play.data.FormFactory;
 import play.mvc.Controller;
@@ -34,6 +35,7 @@ import javax.inject.Inject;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
@@ -248,6 +250,25 @@ public class Application extends Controller {
         Date date = sdf.parse(time_slot);
         return date.getTime();
     }
+
+    public String[] convertfromMillis(long millis) throws ParseException {
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(millis);
+
+        int mYear = calendar.get(Calendar.YEAR);
+        int mMonth = calendar.get(Calendar.MONTH);
+        int mDay = calendar.get(Calendar.DAY_OF_MONTH);
+
+        int mHour = calendar.get(Calendar.HOUR_OF_DAY);
+        int mMinute = calendar.get(Calendar.MINUTE);
+
+        String[] date = {mYear+"-"+mMonth+"-"+mDay,mHour+"-"+mMinute};
+
+
+        return date;
+    }
+
 
     public boolean userExists(String id) throws IOException {
         try {
@@ -541,54 +562,52 @@ public class Application extends Controller {
         /////// GET ALL ORG Data from ES (Abhijeet) /////////////////////////////////
         ///////Store into an array so that I can send this to Org Profile page///////
         /////////////////////////////////////////////////////////////////////////////
-
-//        try {
-//            HttpURLConnection con = (HttpURLConnection) new URL("http://search-angelmatch-6k3puk6rfr3ks6deaxk6qmgfgm.us-east-1.es.amazonaws.com/data_org/organization/_search").openConnection();
-//            con.setRequestMethod("GET");
-//            con.setDoOutput(true);
-//            con.setRequestProperty("Content-Type", "application/json");
-//            con.setRequestProperty("Accept", "application/json");
-//            con.connect();
-//
-//            String query = "{ \"query\": { \"term\":{ \"email\": \"" + email + "\"} } }";
-//            byte[] outputBytes = query.getBytes("UTF-8");
-//            OutputStream os = con.getOutputStream();
-//            os.write(outputBytes);
-//
-//            os.close();
-//            System.out.println(con.getResponseMessage());
-//            BufferedReader br = new BufferedReader(new InputStreamReader((con.getInputStream())));
-//            StringBuilder sb = new StringBuilder();
-//            String output;
-//            while ((output = br.readLine()) != null) {
-//                sb.append(output);
-//            }
-//            String responseString = sb.toString();
-//
-//            JSONParser parser = new JSONParser();
-//            JSONObject json = (JSONObject) parser.parse(responseString);
-//            JSONObject hitsInner = (JSONObject) json.get("hits");
-//            JSONArray dataArray = (JSONArray) hitsInner.get("hits");
-//            Organization[] oArray = new Organization[dataArray.size()];
-//            for(int i=0;i<dataArray.size();i++){
-//                JSONObject firstObject = (JSONObject) dataArray.get(i);
-//                JSONObject data = (JSONObject) firstObject.get("_source");
-//                System.out.println(data.size());
-//            }
-////            System.out.println(data.toString());
-//
-//        }catch (Exception e){
-//            e.printStackTrace();
-//        }
-
-        /////////////////////////////////////////////////////////////
-        /// DEMO DATA TO SIMULATE EVENTS  ///////////////////////////
-        /////////////////////////////////////////////////////////////
-
         ArrayList<Event> eventList = new ArrayList<Event>();
-        for(int i=0;i<5;i++){
-            eventList.add(new Event("2:00","4:00","12 Dec 2016","CS, Java","New York","Social Event Name"));
+        try {
+            HttpURLConnection con = (HttpURLConnection) new URL("http://search-angelmatch-6k3puk6rfr3ks6deaxk6qmgfgm.us-east-1.es.amazonaws.com/data_org/organization/_search").openConnection();
+            con.setRequestMethod("GET");
+            con.setDoOutput(true);
+            con.setRequestProperty("Content-Type", "application/json");
+            con.setRequestProperty("Accept", "application/json");
+            con.connect();
+
+            String query = "{ \"query\": { \"term\":{ \"email\": \"" + email + "\"} } }";
+            byte[] outputBytes = query.getBytes("UTF-8");
+            OutputStream os = con.getOutputStream();
+            os.write(outputBytes);
+
+            os.close();
+            System.out.println(con.getResponseMessage());
+            BufferedReader br = new BufferedReader(new InputStreamReader((con.getInputStream())));
+            StringBuilder sb = new StringBuilder();
+            String output;
+            while ((output = br.readLine()) != null) {
+                sb.append(output);
+            }
+            String responseString = sb.toString();
+
+            JSONParser parser = new JSONParser();
+            JSONObject json = (JSONObject) parser.parse(responseString);
+            JSONObject hitsInner = (JSONObject) json.get("hits");
+            JSONArray dataArray = (JSONArray) hitsInner.get("hits");
+            Organization[] oArray = new Organization[dataArray.size()];
+            for(int i=0;i<dataArray.size();i++){
+                JSONObject firstObject = (JSONObject) dataArray.get(i);
+                JSONObject data = (JSONObject) firstObject.get("_source");
+                if(data.containsKey("time_from")){
+                    String[] date_from = convertfromMillis(Long.parseLong(data.get("time_from").toString()));
+                    String[] date_to = convertfromMillis(Long.parseLong(data.get("time_to").toString()));
+                    eventList.add(new Event(date_from[1],date_to[1],date_from[0],data.get("skills").toString(),data.get("location").toString(),data.get("name").toString()));
+                }
+
+                System.out.println(data.size());
+            }
+//            System.out.println(data.toString());
+
+        }catch (Exception e){
+            e.printStackTrace();
         }
+
 
         return ok(organization.render(eventList));
     }
@@ -607,8 +626,8 @@ public class Application extends Controller {
                     e);
         }
         AmazonS3 s3Client = new AmazonS3Client(credentials);
-        s3Client.putObject(new PutObjectRequest(existingBucketName, keyName,
-                new File("C:\\Users\\akshay\\Desktop\\testS3.json")).withCannedAcl(CannedAccessControlList.PublicRead));
+//        s3Client.putObject(new PutObjectRequest(existingBucketName, keyName,
+//                new File("C:\\Users\\akshay\\Desktop\\testS3.json")).withCannedAcl(CannedAccessControlList.PublicRead));
         String onlineFilePath = "https://s3.amazonaws.com/angelmatch/" + keyName;
         Boolean sqsStatus = pushtoSqs("Computer|Python","Women Empowerment|Homeless","12345678",onlineFilePath);
         System.out.println("SQS Status: "+sqsStatus);
