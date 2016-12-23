@@ -1,3 +1,4 @@
+@(event_list:List[models.Event])
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -38,9 +39,19 @@
         </div>
         <hr>
         <div class="row">
-            <div class="col-sm-12">
                 <h2>Current Open Events</h2>
-            </div>
+                @if(!event_list.isEmpty){
+                    @for(event <- event_list){
+                        <div class="row">
+                         <h2>@event.getName</h2>
+                            Date: @event.getDate();<br>
+                            From: @event.getFromTime();<br>
+                            To: @event.getToTime();<br>
+                            Skills:@event.getSkillsRequired()<br>
+                            <input type="submit" value="Get Good Candidates">
+                        </div>
+                    }
+                }
         </div>
         <hr>
     </body>
