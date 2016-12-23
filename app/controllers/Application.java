@@ -1,4 +1,5 @@
 package controllers;
+import models.Organization;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -514,7 +515,8 @@ public class Application extends Controller {
         return ok(orgLogin.render());
     }
 
-    public Result checkOrgLogin(){
+    public Result checkOrgLogin() throws IOException, org.json.simple.parser.ParseException {
+        System.out.println("inside checkkkk!");
         DynamicForm orgLoginData = formFactory.form().bindFromRequest();
         String email = orgLoginData.get("orgEmail");
 
@@ -522,6 +524,45 @@ public class Application extends Controller {
         /////// GET ALL ORG Data from ES (Abhijeet) /////////////////////////////////
         ///////Store into an array so that I can send this to Org Profile page///////
         /////////////////////////////////////////////////////////////////////////////
+
+        try {
+            HttpURLConnection con = (HttpURLConnection) new URL("http://search-angelmatch-6k3puk6rfr3ks6deaxk6qmgfgm.us-east-1.es.amazonaws.com/data_org/organization/_search").openConnection();
+            con.setRequestMethod("GET");
+            con.setDoOutput(true);
+            con.setRequestProperty("Content-Type", "application/json");
+            con.setRequestProperty("Accept", "application/json");
+            con.connect();
+
+            String query = "{ \"query\": { \"term\":{ \"email\": \"" + email + "\"} } }";
+            byte[] outputBytes = query.getBytes("UTF-8");
+            OutputStream os = con.getOutputStream();
+            os.write(outputBytes);
+
+            os.close();
+            System.out.println(con.getResponseMessage());
+            BufferedReader br = new BufferedReader(new InputStreamReader((con.getInputStream())));
+            StringBuilder sb = new StringBuilder();
+            String output;
+            while ((output = br.readLine()) != null) {
+                sb.append(output);
+            }
+            String responseString = sb.toString();
+
+            JSONParser parser = new JSONParser();
+            JSONObject json = (JSONObject) parser.parse(responseString);
+            JSONObject hitsInner = (JSONObject) json.get("hits");
+            JSONArray dataArray = (JSONArray) hitsInner.get("hits");
+            Organization[] oArray = new Organization[dataArray.size()];
+            for(int i=0;i<dataArray.size();i++){
+                JSONObject firstObject = (JSONObject) dataArray.get(i);
+                JSONObject data = (JSONObject) firstObject.get("_source");
+                System.out.println(data.size());
+            }
+//            System.out.println(data.toString());
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
 
         return ok(organization.render());
     }
