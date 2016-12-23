@@ -82,7 +82,7 @@ def solve():
                 continue
             print ('organization skill found....', skill)
             organization_required_skills_vector[skill_dict[skill]] = skill_weight
-        organization_required_skills_vector = organization_required_skills_vector/np.linalg.norm(organization_required_skills_vector)
+        organization_required_skills_vector = organization_required_skills_vector/np.linalg.norm(organization_required_skills_vector + 0.00001)
         #print (organization_required_skills_vector)
 
     skill_vector_dict = dict()
