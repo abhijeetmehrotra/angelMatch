@@ -86,7 +86,7 @@ public class Application extends Controller {
 //        System.out.println(industry);
 
 //        try {
-//            HttpURLConnection con = (HttpURLConnection) new URL("http://search-angelmatch-6k3puk6rfr3ks6deaxk6qmgfgm.us-east-1.es.amazonaws.com/data/volunteer/_search").openConnection();
+//            HttpURLConnection con = (HttpURLConnection) new URL("http://search-angel-hi75b6sy7gab6vnpx5joxmpd7q.us-east-1.es.amazonaws.com/data/volunteer/_search").openConnection();
 //            con.setRequestMethod("GET");
 //            con.setDoOutput(true);
 //            con.setRequestProperty("Content-Type", "application/json");
@@ -165,7 +165,7 @@ public class Application extends Controller {
         boolean exists = userExists(vid);
         if(!exists) {
             try {
-                HttpURLConnection con = (HttpURLConnection) new URL("http://search-angelmatch-6k3puk6rfr3ks6deaxk6qmgfgm.us-east-1.es.amazonaws.com/data/volunteer").openConnection();
+                HttpURLConnection con = (HttpURLConnection) new URL("http://search-angel-hi75b6sy7gab6vnpx5joxmpd7q.us-east-1.es.amazonaws.com/data/volunteer").openConnection();
                 con.setRequestMethod("POST");
                 con.setDoOutput(true);
                 con.setRequestProperty("Content-Type", "application/json");
@@ -272,7 +272,7 @@ public class Application extends Controller {
 
     public boolean userExists(String id) throws IOException {
         try {
-            HttpURLConnection con = (HttpURLConnection) new URL("http://search-angelmatch-6k3puk6rfr3ks6deaxk6qmgfgm.us-east-1.es.amazonaws.com/data/volunteer/_search").openConnection();
+            HttpURLConnection con = (HttpURLConnection) new URL("http://search-angel-hi75b6sy7gab6vnpx5joxmpd7q.us-east-1.es.amazonaws.com/data/volunteer/_search").openConnection();
             con.setRequestMethod("GET");
             con.setDoOutput(true);
             con.setRequestProperty("Content-Type", "application/json");
@@ -340,7 +340,7 @@ public class Application extends Controller {
         System.out.println(issuesSupported);
 
         try {
-            HttpURLConnection con = (HttpURLConnection) new URL("http://search-angelmatch-6k3puk6rfr3ks6deaxk6qmgfgm.us-east-1.es.amazonaws.com/data_org/organization").openConnection();
+            HttpURLConnection con = (HttpURLConnection) new URL("http://search-angel-hi75b6sy7gab6vnpx5joxmpd7q.us-east-1.es.amazonaws.com/data_org/organization").openConnection();
             con.setRequestMethod("POST");
             con.setDoOutput(true);
             con.setRequestProperty("Content-Type", "application/json");
@@ -396,7 +396,7 @@ public class Application extends Controller {
         String org_id = eventData.get("org_id");
 
         try {
-            HttpURLConnection con = (HttpURLConnection) new URL("http://search-angelmatch-6k3puk6rfr3ks6deaxk6qmgfgm.us-east-1.es.amazonaws.com/data_org/organization/_search").openConnection();
+            HttpURLConnection con = (HttpURLConnection) new URL("http://search-angel-hi75b6sy7gab6vnpx5joxmpd7q.us-east-1.es.amazonaws.com/data_org/organization/_search").openConnection();
             con.setRequestMethod("GET");
             con.setDoOutput(true);
             con.setRequestProperty("Content-Type", "application/json");
@@ -428,7 +428,7 @@ public class Application extends Controller {
             System.out.println(data.toString());
 
             try {
-                HttpURLConnection con_new = (HttpURLConnection) new URL("http://search-angelmatch-6k3puk6rfr3ks6deaxk6qmgfgm.us-east-1.es.amazonaws.com/data_org/organization").openConnection();
+                HttpURLConnection con_new = (HttpURLConnection) new URL("http://search-angel-hi75b6sy7gab6vnpx5joxmpd7q.us-east-1.es.amazonaws.com/data_org/organization").openConnection();
                 con_new.setRequestMethod("POST");
                 con_new.setDoOutput(true);
                 con_new.setRequestProperty("Content-Type", "application/json");
@@ -497,7 +497,7 @@ public class Application extends Controller {
         ArrayList<Event> eventList = new ArrayList<Event>();
 //        String org_id = null;
         try {
-            HttpURLConnection con = (HttpURLConnection) new URL("http://search-angelmatch-6k3puk6rfr3ks6deaxk6qmgfgm.us-east-1.es.amazonaws.com/data_org/organization/_search").openConnection();
+            HttpURLConnection con = (HttpURLConnection) new URL("http://search-angel-hi75b6sy7gab6vnpx5joxmpd7q.us-east-1.es.amazonaws.com/data_org/organization/_search").openConnection();
             con.setRequestMethod("GET");
             con.setDoOutput(true);
             con.setRequestProperty("Content-Type", "application/json");
@@ -612,7 +612,7 @@ public class Application extends Controller {
         ArrayList<Event> eventList = new ArrayList<Event>();
         String org_id=null;
         try {
-            HttpURLConnection con = (HttpURLConnection) new URL("http://search-angelmatch-6k3puk6rfr3ks6deaxk6qmgfgm.us-east-1.es.amazonaws.com/data_org/organization/_search").openConnection();
+            HttpURLConnection con = (HttpURLConnection) new URL("http://search-angel-hi75b6sy7gab6vnpx5joxmpd7q.us-east-1.es.amazonaws.com/data_org/organization/_search").openConnection();
             con.setRequestMethod("GET");
             con.setDoOutput(true);
             con.setRequestProperty("Content-Type", "application/json");
@@ -736,7 +736,7 @@ public class Application extends Controller {
         causes = causes.replaceAll("\\]","");
 
         try {
-            HttpURLConnection con = (HttpURLConnection) new URL("http://search-angelmatch-6k3puk6rfr3ks6deaxk6qmgfgm.us-east-1.es.amazonaws.com/data/volunteer/_search").openConnection();
+            HttpURLConnection con = (HttpURLConnection) new URL("http://search-angel-hi75b6sy7gab6vnpx5joxmpd7q.us-east-1.es.amazonaws.com/data/volunteer/_search").openConnection();
             con.setRequestMethod("GET");
             con.setDoOutput(true);
             con.setRequestProperty("Content-Type", "application/json");
@@ -765,7 +765,7 @@ public class Application extends Controller {
             System.out.println("SQS Status: "+sqsStatus);
 
             String rankList = pullfromSqs();
-            System.out.println(rankList);
+
 
 
         } catch (MalformedURLException e1) {
@@ -796,7 +796,8 @@ public class Application extends Controller {
         List<com.amazonaws.services.sqs.model.Message> messages;
         while(true){
             messages = sqs.receiveMessage(receiveMessageRequest).getMessages();
-            if(!messages.isEmpty()){
+            System.out.println("AAAAABB"+messages.toString());
+            if(!messages.isEmpty() && !messages.get(0).getBody().isEmpty()){
                 break;
             }
         }
