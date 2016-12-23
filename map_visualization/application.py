@@ -75,8 +75,8 @@ def home():
     es = getESInstance()
 
     #call es search without any keywords
-    #result = es.search(size=5000,index='tweep')
-    global result
+    result = es.search(size=5000,index='data')
+    #global result
     #return parsed result with rerender
     return render_template('final_template.html', result=parseRes(result))
 
@@ -99,15 +99,15 @@ def keysearch():
 
 def getESInstance():
   #create and return new es instance based on host
-  es = Elasticsearch([{'host':'search-tweetmap-4qeqqxxkmf62ajq6djhqwvlzni.us-east-1.es.amazonaws.com', 'port':443,'use_ssl':True}])
+  es = Elasticsearch([{'host':'search-angelmatch-6k3puk6rfr3ks6deaxk6qmgfgm.us-east-1.es.amazonaws.com', 'port':443,'use_ssl':True}])
   return es
 
 def getMatchedTweets(es, keyword):
     #extra check here for an empty keyword string inputed from form
     if len(keyword) is not 0:
-      res = es.search(size=5000, index="tweep", body={"query": {"query_string": {"query": keyword}}})
+      res = es.search(size=5000, index="data", body={"query": {"query_string": {"query": keyword}}})
     else:
-      res = es.search(size=5000,index='tweep')
+      res = es.search(size=5000,index='data')
 
     #return result of es search with keywords  
     return res
@@ -120,29 +120,22 @@ def updateKeywords(keywordList):
 def parseRes(result):
   return result
 
-# def parseRes(result):
-#   #parsing results
-#   for r in result['hits']['hits']:
-#     #in each record, remove non-unicode chars from the tweet text (emoticons etc)
-#     r['_source']['text'] = ''.join(i for i in r['_source']['text'] if ord(i)<128)
-#   return result
-
 @application.route('/rt', methods = ['GET','POST'])
 def rt():
-  #the real time tweet logic
-  #fetching the es instance
-  # es = getESInstance()
+  # the real time tweet logic
+  # fetching the es instance
+  es = getESInstance()
 
-  # #retrieving global keywords
-  # global keywordGlobal
+  #retrieving global keywords
+  global keywordGlobal
 
-  # #fetching based on keywords
-  # if len(keywordGlobal) is not 0:
-  #   result = es.search(size=5000, index="tweep", body={"query": {"query_string": {"query": keywordGlobal}}})
-  # else:
-  #   result = es.search(size=5000,index='tweep')
+  #fetching based on keywords
+  if len(keywordGlobal) is not 0:
+    result = es.search(size=5000, index="data", body={"query": {"query_string": {"query": keywordGlobal}}})
+  else:
+    result = es.search(size=5000,index='data')
   
-  global result
+  #global result
   #returning returnecd result without rerender
   return jsonify(parseRes(result))
 
