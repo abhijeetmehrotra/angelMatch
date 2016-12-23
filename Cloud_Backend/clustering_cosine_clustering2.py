@@ -133,6 +133,8 @@ def solve():
             score = np.dot(skill_vector, organization_required_skills_vector)
         #score=0
             print (score)
+            if(score == 0):
+                score = 0.1
             user_score_dict[person['uid']] = score
 
         #print (skill_vector)
