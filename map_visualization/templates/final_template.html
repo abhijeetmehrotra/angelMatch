@@ -121,25 +121,17 @@
 
       var locations=[], i, text=[];
 
-      {% for r in result['hits']['hits'] %}
-      var a={{r['_source']['coordinates'][0]}},
-          b={{r['_source']['coordinates'][1]}}
-          c="{{r['_source']['text'].replace('\n', '')}}";
-          
-      locations.push({lat:b,lng:a});
-      text.push(c);
-      {% endfor %}
-  
+        
       var initializeStuff = function(result) {
         locations = [];
         text = [];
         deleteMarkers();
         //locations.push({lat: 48.5602, lng: -119.5752});
         //addMarker(locations[0], 'tempText');
-        var size = result['hits'].length, r, a, b;
+        var size = result['hits']['hits'].length, r, a, b;
 
         for (var i = 0;i<size; i++){
-          r = result['hits'][i];
+          r = result['hits']['hits'][i];
           a = r['_source']['location'];
           console.log(a);
           c = r['_source']['text'] || "SID";
@@ -154,6 +146,8 @@
                     this.locations.push(currloc);
                     this.text.push(c);
                     this.addMarker(currloc, c);
+                    var markerCluster = new MarkerClusterer(map, markers,
+                        {imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'});
                   }
                 }
               }
@@ -163,8 +157,8 @@
           
         }
 
-        var markerCluster = new MarkerClusterer(map, markers,
-            {imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'});
+        // var markerCluster = new MarkerClusterer(map, markers,
+        //     {imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'});
       }
 
     </script>
