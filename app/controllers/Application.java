@@ -1,5 +1,6 @@
 package controllers;
 import com.amazonaws.AmazonServiceException;
+import com.amazonaws.services.budgets.model.TimeUnit;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.*;
@@ -62,7 +63,7 @@ public class Application extends Controller {
             eventList.add(new Event("2:00","4:00","12 Dec 2016","CS, Java","New York","Social Event Name","issues"));
         }
 
-        return ok(organization.render(eventList));
+        return ok(organization.render(eventList,"12345678"));
     }
 
     public Result showVolunteerSearchPage(){
@@ -119,7 +120,7 @@ public class Application extends Controller {
         String email = volunteerData.get("email");
         sendEmail(email,"Thanks for signing up for Angelmatch","Angelmatch Registration");
         String industry = volunteerData.get("industry");
-        String imageURL = volunteerData.get("imageURL");
+        String imageURL = volunteerData.get("imgurl");
         String skills = volunteerData.get("skills");
         String endorsements = volunteerData.get("endorsements");
         String numCons = volunteerData.get("numCons");
@@ -209,6 +210,7 @@ public class Application extends Controller {
                 os.write(outputBytes);
 
                 os.close();
+                System.out.println(con.getResponseCode());
             } catch (MalformedURLException e1) {
                 // TODO Auto-generated catch block
                 e1.printStackTrace();
@@ -379,7 +381,7 @@ public class Application extends Controller {
             eventList.add(new Event("2:00","4:00","12 Dec 2016","CS, Java","New York","Social Event Name","issues"));
         }
 
-        return(ok(organization.render(eventList)));
+        return(ok(organization.render(eventList,oid)));
     }
 
     public Result addEvent() throws org.json.simple.parser.ParseException, ParseException {
@@ -390,7 +392,7 @@ public class Application extends Controller {
         String eventEndTime = eventData.get("eventEndTime");
         String eventSkills = eventData.get("event_skills");
 
-        String org_id = "12345678"; //TODO: replace with actual org_id
+        String org_id = eventData.get("org_id");
 
         try {
             HttpURLConnection con = (HttpURLConnection) new URL("http://search-angelmatch-6k3puk6rfr3ks6deaxk6qmgfgm.us-east-1.es.amazonaws.com/data_org/organization/_search").openConnection();
@@ -484,12 +486,60 @@ public class Application extends Controller {
             // TODO Auto-generated catch block
             e1.printStackTrace();
         }
+        ///////////////////////////////////////////////////
+        /////////////////////////////////////////////////////
+        try {
+            java.util.concurrent.TimeUnit.SECONDS.sleep(3);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         ArrayList<Event> eventList = new ArrayList<Event>();
-        for(int i=0;i<5;i++){
-            eventList.add(new Event("2:00","4:00","12 Dec 2016","CS, Java","New York","Social Event Name","issues"));
+//        String org_id = null;
+        try {
+            HttpURLConnection con = (HttpURLConnection) new URL("http://search-angelmatch-6k3puk6rfr3ks6deaxk6qmgfgm.us-east-1.es.amazonaws.com/data_org/organization/_search").openConnection();
+            con.setRequestMethod("GET");
+            con.setDoOutput(true);
+            con.setRequestProperty("Content-Type", "application/json");
+            con.setRequestProperty("Accept", "application/json");
+            con.connect();
+
+            String query = "{ \"query\": { \"term\":{ \"id\": \"" + org_id + "\"} } }";
+            byte[] outputBytes = query.getBytes("UTF-8");
+            OutputStream os = con.getOutputStream();
+            os.write(outputBytes);
+
+            os.close();
+            System.out.println(con.getResponseMessage());
+            BufferedReader br = new BufferedReader(new InputStreamReader((con.getInputStream())));
+            StringBuilder sb = new StringBuilder();
+            String output;
+            while ((output = br.readLine()) != null) {
+                sb.append(output);
+            }
+            String responseString = sb.toString();
+
+            JSONParser parser = new JSONParser();
+            JSONObject json = (JSONObject) parser.parse(responseString);
+            JSONObject hitsInner = (JSONObject) json.get("hits");
+            JSONArray dataArray = (JSONArray) hitsInner.get("hits");
+            Organization[] oArray = new Organization[dataArray.size()];
+            for(int i=0;i<dataArray.size();i++){
+                JSONObject firstObject = (JSONObject) dataArray.get(i);
+                JSONObject data = (JSONObject) firstObject.get("_source");
+                if(data.containsKey("time_from")){
+                    String[] date_from = convertfromMillis(Long.parseLong(data.get("time_from").toString()));
+                    String[] date_to = convertfromMillis(Long.parseLong(data.get("time_to").toString()));
+                    eventList.add(new Event(date_from[1],date_to[1],date_from[0],data.get("skills").toString(),data.get("location").toString(),data.get("event_name").toString(),data.get("causes_supported").toString()));
+                }
+            }
+        }catch (Exception e){
+            e.printStackTrace();
         }
 
-        return ok(organization.render(eventList));
+        ////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////
+
+        return ok(organization.render(eventList,org_id));
     }
     public Result orgCompleteProfile(){
         return ok(ofillprofile.render());
@@ -559,6 +609,7 @@ public class Application extends Controller {
         ///////Store into an array so that I can send this to Org Profile page///////
         /////////////////////////////////////////////////////////////////////////////
         ArrayList<Event> eventList = new ArrayList<Event>();
+        String org_id=null;
         try {
             HttpURLConnection con = (HttpURLConnection) new URL("http://search-angelmatch-6k3puk6rfr3ks6deaxk6qmgfgm.us-east-1.es.amazonaws.com/data_org/organization/_search").openConnection();
             con.setRequestMethod("GET");
@@ -593,19 +644,17 @@ public class Application extends Controller {
                 if(data.containsKey("time_from")){
                     String[] date_from = convertfromMillis(Long.parseLong(data.get("time_from").toString()));
                     String[] date_to = convertfromMillis(Long.parseLong(data.get("time_to").toString()));
-                    eventList.add(new Event(date_from[1],date_to[1],date_from[0],data.get("skills").toString(),data.get("location").toString(),data.get("name").toString(),data.get("causes_supported").toString()));
+                    eventList.add(new Event(date_from[1],date_to[1],date_from[0],data.get("skills").toString(),data.get("location").toString(),data.get("event_name").toString(),data.get("causes_supported").toString()));
                 }
-
+                org_id = data.get("id").toString();
                 System.out.println(data.size());
             }
-//            System.out.println(data.toString());
-
         }catch (Exception e){
             e.printStackTrace();
         }
 
 
-        return ok(organization.render(eventList));
+        return ok(organization.render(eventList,org_id));
     }
 
     public String pushToS3(String jsonContent,String fileName){

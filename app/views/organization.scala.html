@@ -44,7 +44,7 @@
                 @if(!event_list.isEmpty){
                     @for(event <- event_list){
                         <div class="row">
-                         <h2>@event.getName</h2>
+                         <h2>@event.getName()</h2>
                             Date: @event.getDate();<br>
                             From: @event.getFromTime();<br>
                             To: @event.getToTime();<br>
