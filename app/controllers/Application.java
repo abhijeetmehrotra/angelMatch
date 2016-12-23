@@ -586,7 +586,7 @@ public class Application extends Controller {
         }
         AmazonS3 s3Client = new AmazonS3Client(credentials);
         s3Client.putObject(new PutObjectRequest(existingBucketName, keyName,
-                new File("C:\\Users\\akshay\\Desktop\\testS3.json")));
+                new File("C:\\Users\\akshay\\Desktop\\testS3.json")).withCannedAcl(CannedAccessControlList.PublicRead));
         String onlineFilePath = "https://s3.amazonaws.com/angelmatch/" + keyName;
         Boolean sqsStatus = pushtoSqs("Computer|Python","Women Empowerment|Homeless",onlineFilePath);
         System.out.println("SQS Status: "+sqsStatus);
