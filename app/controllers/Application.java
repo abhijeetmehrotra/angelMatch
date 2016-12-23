@@ -588,12 +588,12 @@ public class Application extends Controller {
         s3Client.putObject(new PutObjectRequest(existingBucketName, keyName,
                 new File("C:\\Users\\akshay\\Desktop\\testS3.json")).withCannedAcl(CannedAccessControlList.PublicRead));
         String onlineFilePath = "https://s3.amazonaws.com/angelmatch/" + keyName;
-        Boolean sqsStatus = pushtoSqs("Computer|Python","Women Empowerment|Homeless",onlineFilePath);
+        Boolean sqsStatus = pushtoSqs("Computer|Python","Women Empowerment|Homeless","12345678",onlineFilePath);
         System.out.println("SQS Status: "+sqsStatus);
         return onlineFilePath;
     }
 
-    public boolean pushtoSqs(String skills,String causes, String url){
+    public boolean pushtoSqs(String skills,String causes, String id,String url){
 
         AWSCredentials credentials = null;
         try {
