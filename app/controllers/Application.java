@@ -1,4 +1,7 @@
 package controllers;
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.model.*;
 import models.Organization;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -18,16 +21,12 @@ import play.mvc.Controller;
 import play.mvc.Result;
 import views.html.*;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
 import javax.inject.Inject;
-import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -43,6 +42,7 @@ public class Application extends Controller {
     FormFactory formFactory;
 
     public Result index() {
+        pushToS3("hello","bye.json");
         return ok(index.render());
     }
 
@@ -566,4 +566,26 @@ public class Application extends Controller {
 
         return ok(organization.render());
     }
+
+    public boolean pushToS3(String jsonContent,String fileName){
+        String existingBucketName  = "angelmatch";
+        String keyName             = fileName;
+        String filePath            = "data/";
+        AWSCredentials credentials = null;
+        try {
+            credentials = new ProfileCredentialsProvider().getCredentials();
+        } catch (Exception e) {
+            throw new AmazonClientException(
+                    "Cannot load the credentials from the credential profiles file. " +
+                            "Please make sure that your credentials file is at the correct " +
+                            "location (~/.aws/credentials), and is in valid format.",
+                    e);
+        }
+
+        AmazonS3 s3Client = new AmazonS3Client(credentials);
+        s3Client.putObject(new PutObjectRequest(existingBucketName, keyName,
+                new File("C:\\Users\\akshay\\Desktop\\testS3.json")));
+            return true;
+    }
 }
+
