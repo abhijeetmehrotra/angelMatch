@@ -66,16 +66,16 @@ public class Application extends Controller {
     }
 
     public Result volunteerCompleteProfile(String fname,String lname,String email, String vid,String location,String numCons, String imgURL, String industry) throws UnsupportedEncodingException {
-        System.out.println(fname);
-        System.out.println(lname);
-        System.out.println(vid);
-        System.out.println(location);
-        URLDecoder u = new URLDecoder();
-        String cleanLocation = u.decode(location, "UTF-8");
-        System.out.println(numCons);
-        System.out.println(imgURL);
-        System.out.println(email);
-        System.out.println(industry);
+//        System.out.println(fname);
+//        System.out.println(lname);
+//        System.out.println(vid);
+//        System.out.println(location);
+//        URLDecoder u = new URLDecoder();
+//        String cleanLocation = u.decode(location, "UTF-8");
+//        System.out.println(numCons);
+//        System.out.println(imgURL);
+//        System.out.println(email);
+//        System.out.println(industry);
 
 //        try {
 //            HttpURLConnection con = (HttpURLConnection) new URL("http://search-angelmatch-6k3puk6rfr3ks6deaxk6qmgfgm.us-east-1.es.amazonaws.com/data/volunteer/_search").openConnection();
@@ -100,7 +100,7 @@ public class Application extends Controller {
 //            // TODO Auto-generated catch block
 //            e1.printStackTrace();
 //        }
-        return ok(vfillprofile.render(fname,lname,email,vid,cleanLocation,numCons,imgURL,industry));
+        return ok(vfillprofile.render(fname,lname,email,vid,location,numCons,imgURL,industry));
     }
 
     public Result processVolunteerForm() throws ParseException, IOException {
@@ -571,10 +571,9 @@ public class Application extends Controller {
         return ok(organization.render());
     }
 
-    public boolean pushToS3(String jsonContent,String fileName){
+    public String pushToS3(String jsonContent,String fileName){
         String existingBucketName  = "angelmatch";
         String keyName             = fileName;
-        String filePath            = "data/";
         AWSCredentials credentials = null;
         try {
             credentials = new ProfileCredentialsProvider().getCredentials();
@@ -585,14 +584,16 @@ public class Application extends Controller {
                             "location (~/.aws/credentials), and is in valid format.",
                     e);
         }
-
         AmazonS3 s3Client = new AmazonS3Client(credentials);
         s3Client.putObject(new PutObjectRequest(existingBucketName, keyName,
                 new File("C:\\Users\\akshay\\Desktop\\testS3.json")));
-            return true;
+        String onlineFilePath = "https://s3.amazonaws.com/angelmatch/" + keyName;
+        Boolean sqsStatus = pushtoSqs("Computer|Python","Women Empowerment|Homeless",onlineFilePath);
+        System.out.println("SQS Status: "+sqsStatus);
+        return onlineFilePath;
     }
 
-    public boolean pushtoSqs(){
+    public boolean pushtoSqs(String skills,String causes, String url){
 
         AWSCredentials credentials = null;
         try {
@@ -606,8 +607,10 @@ public class Application extends Controller {
         }
 
         AmazonSQS sqs = new AmazonSQSClient(credentials);
+        String messageToSend = skills+","+causes+","+url;
         try{
-            sqs.sendMessage(new SendMessageRequest("https://sqs.us-east-1.amazonaws.com/021959201754/angelpush", "This is my message text1."));
+            sqs.sendMessage(new SendMessageRequest("https://sqs.us-east-1.amazonaws.com/021959201754/angelpush", messageToSend));
+            return true;
         }catch (AmazonServiceException ase) {
             System.out.println("Caught an AmazonServiceException, which means your request made it " +
                     "to Amazon SQS, but was rejected with an error response for some reason.");
@@ -616,17 +619,14 @@ public class Application extends Controller {
             System.out.println("AWS Error Code:   " + ase.getErrorCode());
             System.out.println("Error Type:       " + ase.getErrorType());
             System.out.println("Request ID:       " + ase.getRequestId());
-        }
-        catch (AmazonClientException ace) {
+            return false;
+        }catch (AmazonClientException ace) {
             System.out.println("Caught an AmazonClientException, which means the client encountered " +
                     "a serious internal problem while trying to communicate with SQS, such as not " +
                     "being able to access the network.");
             System.out.println("Error Message: " + ace.getMessage());
+            return false;
         }
-
-
-
-        return true;
     }
 
 }
