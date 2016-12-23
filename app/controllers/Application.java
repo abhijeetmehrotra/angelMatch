@@ -210,6 +210,7 @@ public class Application extends Controller {
                 os.write(outputBytes);
 
                 os.close();
+                System.out.println("PUSHED!!!!!!");
                 System.out.println(con.getResponseCode());
             } catch (MalformedURLException e1) {
                 // TODO Auto-generated catch block
@@ -762,6 +763,9 @@ public class Application extends Controller {
             String onlineFilePath = pushToS3(hitsInner.toString(),String.valueOf(System.currentTimeMillis())+".json");
             Boolean sqsStatus = pushtoSqs(skills,causes,onlineFilePath);
             System.out.println("SQS Status: "+sqsStatus);
+
+            String rankList = pullfromSqs();
+            System.out.println(rankList);
 
 
         } catch (MalformedURLException e1) {
