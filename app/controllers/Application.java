@@ -40,6 +40,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 
+import com.amazonaws.services.sqs.model.DeleteMessageRequest;
+import com.amazonaws.services.sqs.model.ReceiveMessageRequest;
+
 public class Application extends Controller {
 
     @Inject
@@ -110,6 +113,7 @@ public class Application extends Controller {
         String lastName = volunteerData.get("lname");
         String location = volunteerData.get("location");
         String email = volunteerData.get("email");
+        sendEmail(email,"Thanks for signing up for Angelmatch","Angelmatch Registration");
         String industry = volunteerData.get("industry");
         String imageURL = volunteerData.get("imageURL");
         String skills = volunteerData.get("skills");
@@ -627,6 +631,45 @@ public class Application extends Controller {
             System.out.println("Error Message: " + ace.getMessage());
             return false;
         }
+    }
+
+    public Result rankedVolunteers(){
+        return ok(rankedVolunteers.render());
+    }
+
+    public String pullfromSqs(){
+        AWSCredentials credentials = null;
+        try {
+            credentials = new ProfileCredentialsProvider().getCredentials();
+        } catch (Exception e) {
+            throw new AmazonClientException(
+                    "Cannot load the credentials from the credential profiles file. " +
+                            "Please make sure that your credentials file is at the correct " +
+                            "location (~/.aws/credentials), and is in valid format.",
+                    e);
+        }
+
+        AmazonSQS sqs = new AmazonSQSClient(credentials);
+        ReceiveMessageRequest receiveMessageRequest = new ReceiveMessageRequest("https://sqs.us-east-1.amazonaws.com/021959201754/machinepull");
+        List<com.amazonaws.services.sqs.model.Message> messages;
+        while(true){
+            messages = sqs.receiveMessage(receiveMessageRequest).getMessages();
+            if(!messages.isEmpty()){
+                break;
+            }
+        }
+
+        com.amazonaws.services.sqs.model.Message message = messages.get(0);
+        String messageData = message.getBody();
+
+        // Delete a message
+        System.out.println("Deleting a message.\n");
+        String messageReceiptHandle = messages.get(0).getReceiptHandle();
+        sqs.deleteMessage(new DeleteMessageRequest()
+                .withQueueUrl("https://sqs.us-east-1.amazonaws.com/021959201754/machinepull")
+                .withReceiptHandle(messageReceiptHandle));
+
+        return messageData;
     }
 
 }
