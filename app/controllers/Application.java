@@ -1,4 +1,5 @@
 package controllers;
+import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.*;
@@ -14,6 +15,9 @@ import com.amazonaws.regions.Region;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.simpleemail.AmazonSimpleEmailServiceClient;
 import com.amazonaws.services.simpleemail.model.*;
+import com.amazonaws.services.sqs.AmazonSQS;
+import com.amazonaws.services.sqs.AmazonSQSClient;
+import com.amazonaws.services.sqs.model.SendMessageRequest;
 
 import play.data.DynamicForm;
 import play.data.FormFactory;
@@ -587,5 +591,43 @@ public class Application extends Controller {
                 new File("C:\\Users\\akshay\\Desktop\\testS3.json")));
             return true;
     }
+
+    public boolean pushtoSqs(){
+
+        AWSCredentials credentials = null;
+        try {
+            credentials = new ProfileCredentialsProvider().getCredentials();
+        } catch (Exception e) {
+            throw new AmazonClientException(
+                    "Cannot load the credentials from the credential profiles file. " +
+                            "Please make sure that your credentials file is at the correct " +
+                            "location (~/.aws/credentials), and is in valid format.",
+                    e);
+        }
+
+        AmazonSQS sqs = new AmazonSQSClient(credentials);
+        try{
+            sqs.sendMessage(new SendMessageRequest("https://sqs.us-east-1.amazonaws.com/021959201754/angelpush", "This is my message text1."));
+        }catch (AmazonServiceException ase) {
+            System.out.println("Caught an AmazonServiceException, which means your request made it " +
+                    "to Amazon SQS, but was rejected with an error response for some reason.");
+            System.out.println("Error Message:    " + ase.getMessage());
+            System.out.println("HTTP Status Code: " + ase.getStatusCode());
+            System.out.println("AWS Error Code:   " + ase.getErrorCode());
+            System.out.println("Error Type:       " + ase.getErrorType());
+            System.out.println("Request ID:       " + ase.getRequestId());
+        }
+        catch (AmazonClientException ace) {
+            System.out.println("Caught an AmazonClientException, which means the client encountered " +
+                    "a serious internal problem while trying to communicate with SQS, such as not " +
+                    "being able to access the network.");
+            System.out.println("Error Message: " + ace.getMessage());
+        }
+
+
+
+        return true;
+    }
+
 }
 
