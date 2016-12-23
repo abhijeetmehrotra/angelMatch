@@ -49,7 +49,6 @@ public class Application extends Controller {
     FormFactory formFactory;
 
     public Result index() {
-        pushToS3("hello","bye.json");
         return ok(index.render());
     }
 
@@ -261,7 +260,7 @@ public class Application extends Controller {
         int mHour = date.getHours();
         int mMinute = date.getMinutes();
 
-        String[] retDate = {mYear+"-"+mMonth+"-"+mDay,mHour+"-"+mMinute};
+        String[] retDate = {mYear+"-"+mMonth+"-"+mDay,mHour+":"+mMinute};
 
 
         return retDate;
@@ -623,15 +622,21 @@ public class Application extends Controller {
                     e);
         }
         AmazonS3 s3Client = new AmazonS3Client(credentials);
-//        s3Client.putObject(new PutObjectRequest(existingBucketName, keyName,
-//                new File("C:\\Users\\akshay\\Desktop\\testS3.json")).withCannedAcl(CannedAccessControlList.PublicRead));
+        try{
+            PrintWriter writer = new PrintWriter(fileName, "UTF-8");
+            writer.print(jsonContent);
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        s3Client.putObject(new PutObjectRequest(existingBucketName, keyName,
+                new File(fileName)).withCannedAcl(CannedAccessControlList.PublicRead));
         String onlineFilePath = "https://s3.amazonaws.com/angelmatch/" + keyName;
-        Boolean sqsStatus = pushtoSqs("Computer|Python","Women Empowerment|Homeless","12345678",onlineFilePath);
-        System.out.println("SQS Status: "+sqsStatus);
         return onlineFilePath;
     }
 
-    public boolean pushtoSqs(String skills,String causes, String id,String url){
+    public boolean pushtoSqs(String skills,String causes,String url){
 
         AWSCredentials credentials = null;
         try {
@@ -667,10 +672,57 @@ public class Application extends Controller {
         }
     }
 
-    public Result rankedVolunteers(){
+    public Result rankedVolunteers() throws ParseException, org.json.simple.parser.ParseException {
         DynamicForm searchData =  formFactory.form().bindFromRequest();
-        String searchString = searchData.get("recommendButton");
+        String searchString = searchData.get("recommendButton").toString();
         System.out.println(searchString);
+        String[] arrayData = searchString.split("\\|");
+
+        long fromDate = convertToMillis(arrayData[2],arrayData[3]);
+        long toDate = convertToMillis(arrayData[2],arrayData[4]);
+        String skills = arrayData[0].replaceAll("\\[","");
+        skills = skills.replaceAll("\\]","");
+        String causes = arrayData[1].replaceAll("\\[","");
+        causes = causes.replaceAll("\\]","");
+
+        try {
+            HttpURLConnection con = (HttpURLConnection) new URL("http://search-angelmatch-6k3puk6rfr3ks6deaxk6qmgfgm.us-east-1.es.amazonaws.com/data/volunteer/_search").openConnection();
+            con.setRequestMethod("GET");
+            con.setDoOutput(true);
+            con.setRequestProperty("Content-Type", "application/json");
+            con.setRequestProperty("Accept", "application/json");
+            con.connect();
+
+            String query =  "{ \"query\": { \"constant_score\": { \"filter\": { \"bool\": { \"must\": { \"range\": { \"time_from\": { \"lt\": \""+fromDate+"\" } } }, \"must\": { \"term\": { \"location\": \""+arrayData[5]+"\" } }, \"must\": { \"range\": { \"time_to\": { \"gt\": \""+toDate+"\" } } } } } } } }";
+            byte[] outputBytes = query.getBytes("UTF-8");
+            OutputStream os = con.getOutputStream();
+            os.write(outputBytes);
+
+            os.close();
+            BufferedReader br = new BufferedReader(new InputStreamReader((con.getInputStream())));
+            StringBuilder sb = new StringBuilder();
+            String output;
+            while ((output = br.readLine()) != null) {
+                sb.append(output);
+            }
+            String responseString = sb.toString();
+            JSONParser parser = new JSONParser();
+            JSONObject json = (JSONObject) parser.parse(responseString);
+            JSONObject hitsInner = (JSONObject) json.get("hits");
+
+            String onlineFilePath = pushToS3(hitsInner.toString(),String.valueOf(System.currentTimeMillis())+".json");
+            Boolean sqsStatus = pushtoSqs(skills,causes,onlineFilePath);
+            System.out.println("SQS Status: "+sqsStatus);
+
+
+        } catch (MalformedURLException e1) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
+        } catch (IOException e1) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
+        }
+
         return ok(rankedVolunteers.render());
     }
 
