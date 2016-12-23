@@ -4,17 +4,23 @@ package models;
  * Created by akshay on 12/23/2016.
  */
 public class Event {
-    String fromTime, toTime, date, skillsRequired,location,name;
+    String fromTime, toTime, date, skillsRequired,location,name,issues;
 
-    public Event(String fromTime, String toTime, String date, String skillsRequired, String location,String name) {
+
+
+    public Event(String fromTime, String toTime, String date, String skillsRequired, String location, String name, String issues) {
         this.fromTime = fromTime;
         this.toTime = toTime;
         this.date = date;
         this.skillsRequired = skillsRequired;
         this.location = location;
         this.name = name;
+        this.issues = issues;
     }
 
+    public String getIssues() {
+        return issues;
+    }
 
     public String getFromTime() {
         return fromTime;

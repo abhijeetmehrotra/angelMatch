@@ -48,7 +48,9 @@
                             From: @event.getFromTime();<br>
                             To: @event.getToTime();<br>
                             Skills:@event.getSkillsRequired()<br>
-                            <input type="submit" value="Get Good Candidates">
+                            <form method="GET" action="@routes.Application.rankedVolunteers()">
+                                <button id="recommendButton" name="recommendButton" value="@event.getSkillsRequired()|@event.getIssues()|@event.getFromTime()|@event.getToTime()|@event.getLocation()">Get Good Candidates</button>
+                            </form>
                         </div>
                     }
                 }

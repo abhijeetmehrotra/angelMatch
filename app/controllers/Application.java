@@ -60,7 +60,7 @@ public class Application extends Controller {
     public Result showOrganizationPage(){
         ArrayList<Event> eventList = new ArrayList<Event>();
         for(int i=0;i<5;i++){
-            eventList.add(new Event("2:00","4:00","12 Dec 2016","CS, Java","New York","Social Event Name"));
+            eventList.add(new Event("2:00","4:00","12 Dec 2016","CS, Java","New York","Social Event Name","issues"));
         }
 
         return ok(organization.render(eventList));
@@ -377,7 +377,7 @@ public class Application extends Controller {
         }
         ArrayList<Event> eventList = new ArrayList<Event>();
         for(int i=0;i<5;i++){
-            eventList.add(new Event("2:00","4:00","12 Dec 2016","CS, Java","New York","Social Event Name"));
+            eventList.add(new Event("2:00","4:00","12 Dec 2016","CS, Java","New York","Social Event Name","issues"));
         }
 
         return(ok(organization.render(eventList)));
@@ -487,7 +487,7 @@ public class Application extends Controller {
         }
         ArrayList<Event> eventList = new ArrayList<Event>();
         for(int i=0;i<5;i++){
-            eventList.add(new Event("2:00","4:00","12 Dec 2016","CS, Java","New York","Social Event Name"));
+            eventList.add(new Event("2:00","4:00","12 Dec 2016","CS, Java","New York","Social Event Name","issues"));
         }
 
         return ok(organization.render(eventList));
@@ -552,7 +552,6 @@ public class Application extends Controller {
     }
 
     public Result checkOrgLogin() throws IOException, org.json.simple.parser.ParseException {
-        System.out.println("inside checkkkk!");
         DynamicForm orgLoginData = formFactory.form().bindFromRequest();
         String email = orgLoginData.get("orgEmail");
 
@@ -595,7 +594,7 @@ public class Application extends Controller {
                 if(data.containsKey("time_from")){
                     String[] date_from = convertfromMillis(Long.parseLong(data.get("time_from").toString()));
                     String[] date_to = convertfromMillis(Long.parseLong(data.get("time_to").toString()));
-                    eventList.add(new Event(date_from[1],date_to[1],date_from[0],data.get("skills").toString(),data.get("location").toString(),data.get("name").toString()));
+                    eventList.add(new Event(date_from[1],date_to[1],date_from[0],data.get("skills").toString(),data.get("location").toString(),data.get("name").toString(),data.get("causes_supported").toString()));
                 }
 
                 System.out.println(data.size());
@@ -669,6 +668,9 @@ public class Application extends Controller {
     }
 
     public Result rankedVolunteers(){
+        DynamicForm searchData =  formFactory.form().bindFromRequest();
+        String searchString = searchData.get("recommendButton");
+        System.out.println(searchString);
         return ok(rankedVolunteers.render());
     }
 
