@@ -15,6 +15,7 @@ GET     /ofillprofile               controllers.Application.orgCompleteProfile()
 POST    /addevent                   controllers.Application.addEvent()
 GET     /orgLogin                   controllers.Application.orgLogin()
 POST    /checkOrgLogin              controllers.Application.checkOrgLogin()
-GET     /rankedVolunteers           controllers.Application.rankedVolunteers()
+GET    /rankedVolunteers           controllers.Application.rankedVolunteers()
+GET     /contactVolunteer           controllers.Application.contactVolunteer()
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)
