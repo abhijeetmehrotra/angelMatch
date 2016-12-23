@@ -1,4 +1,4 @@
-@(event_list:List[models.Event])
+@(event_list:List[models.Event],org_id:String)
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -28,10 +28,11 @@
             <div class="col-sm-6">
                 <h2> Add Event </h2>
                 <form method="POST" action="@routes.Application.addEvent()">
+                <input type="hidden" name="org_id" id="org_id" value="@org_id">
                 Event Name: <input type="text" id="event_name" name="event_name"><br>
                 Event Date: <input type="date" id="event_date" name="event_date"><br>
-                    Time From:<input type="time" id="eventStartTime" name="eventStartTime"><br>
-                    Time   To:<input type="time" id="eventEndTime" name="eventEndTime"><br>
+                Time From:<input type="time" id="eventStartTime" name="eventStartTime"><br>
+                Time   To:<input type="time" id="eventEndTime" name="eventEndTime"><br>
                 Skills needed(Comma separated):<input type="text" id="event_skills" name="event_skills">
                     <input type="submit">
                 </form>
