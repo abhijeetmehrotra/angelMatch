@@ -1,0 +1,10 @@
+{
+  "name": "XYZ",
+  "location": "New York",
+  "issues_supported": "Child Abuse Prevention, Shelters for Homeless People",
+  "event_name": "Teach MATLAB to Homeless people and children",
+  "event_from_date": "1482602400000",
+  "event_to_date": "1482620400000",
+  "num_volunteers": "5",
+  "skills": "MATLAB,Computer Science"
+}

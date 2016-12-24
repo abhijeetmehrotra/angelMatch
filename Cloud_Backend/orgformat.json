@@ -1,0 +1,63 @@
+{
+	"took": 1,
+	"timed_out": false,
+	"_shards": {
+		"total": 1,
+		"successful": 1,
+		"failed": 0
+	},
+	"hits": {
+		"total": 3,
+		"max_score": 1.0,
+		"hits": [{
+			"_index": "data_org",
+			"_type": "organization",
+			"_id": "AVknvMAgEWR49AZHhDB8",
+			"_score": 1.0,
+			"_source": {
+				"uid": "148243036898612345678",
+				"id": "12345678",
+				"name": "ABC",
+				"email": "abhijeet.mehrotra@columbia.edu",
+				"num_years": 7,
+				"location": "New York",
+				"skills": ["computer science, technology"],
+				"causes_supported": ["Women Empowerment,Child Education,LGBTQ"]
+			}
+		}, {
+			"_index": "data_org",
+			"_type": "organization",
+			"_id": "AVkog-aeEWR49AZHhDCA",
+			"_score": 1.0,
+			"_source": {
+				"uid": "123456789123456789123",
+				"id": "12345678",
+				"name": "Aki Kumar",
+				"email": "ff@abc.com",
+				"num_years": 3,
+				"location": "Boston",
+				"skills": ["java,python,matlab"],
+				"causes_supported": ["LGBTQ,Veteran"]
+			}
+		}, {
+			"_index": "data_org",
+			"_type": "organization",
+			"_id": "AVkomGdtEWR49AZHhDCG",
+			"_score": 1.0,
+			"_source": {
+				"uid": "148244476959512345678",
+				"id": "12345678",
+				"name": "so_seva",
+				"email": "abhijeet.mehrotra@columbia.edu",
+				"num_years": 8,
+				"location": "New York",
+				"skills": ["java,python,sql"],
+				"event_name": "amaze",
+				"time_from": 1481091780000,
+				"time_to": 1481092800000,
+				"summary": "Lorem Ipsum",
+				"causes_supported": ["Women Empowerment,Child Education,LGBTQ"]
+			}
+		}]
+	}
+}
