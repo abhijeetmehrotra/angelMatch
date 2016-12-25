@@ -26,6 +26,7 @@ import play.data.FormFactory;
 import play.mvc.Controller;
 import play.mvc.Result;
 import views.html.*;
+import models.Volunteer;
 
 import java.io.*;
 import java.net.HttpURLConnection;
@@ -36,7 +37,9 @@ import javax.inject.Inject;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
@@ -728,6 +731,7 @@ public class Application extends Controller {
         String searchString = searchData.get("recommendButton").toString();
         System.out.println(searchString);
         String[] arrayData = searchString.split("\\|");
+        ArrayList<Volunteer>  vList = new ArrayList<>();
 
         long fromDate = convertToMillis(arrayData[2],arrayData[3]);
         long toDate = convertToMillis(arrayData[2],arrayData[4]);
@@ -767,6 +771,73 @@ public class Application extends Controller {
 
             String rankList = pullfromSqs();
 
+            String t2 = rankList.substring(1,rankList.length()-1);
+            String[] split1 = t2.split(",");
+            String[][] a = new String[split1.length][2];
+            for(int i=0;i<split1.length;i++){
+                try {
+                    a[i][0] = split1[i].split(":")[0];
+                    a[i][1] = split1[i].split(":")[1];
+                }catch (Exception e){
+                    e.printStackTrace();
+                }}
+
+            for(int i=0;i<a.length;i++){
+
+                System.out.println(a[i][0]);
+                System.out.println(a[i][1]);
+
+
+                try {
+                    HttpURLConnection con_last = (HttpURLConnection) new URL("http://search-angel-hi75b6sy7gab6vnpx5joxmpd7q.us-east-1.es.amazonaws.com/data/volunteer/_search").openConnection();
+                    con_last.setRequestMethod("GET");
+                    con_last.setDoOutput(true);
+                    con_last.setRequestProperty("Content-Type", "application/json");
+                    con_last.setRequestProperty("Accept", "application/json");
+                    con_last.connect();
+
+                    String query_last = "{ \"query\": { \"term\":{ \"uid\": \"" + a[i][0] + "\"} } }";
+                    byte[] outputBytes_last = query_last.getBytes("UTF-8");
+                    OutputStream os_last = con_last.getOutputStream();
+                    os_last.write(outputBytes_last);
+
+                    os_last.close();
+                    BufferedReader br_last = new BufferedReader(new InputStreamReader((con_last.getInputStream())));
+                    StringBuilder sb_last = new StringBuilder();
+                    String output_last;
+                    while ((output_last = br_last.readLine()) != null) {
+                        sb_last.append(output_last);
+                    }
+                    String responseString_last = sb_last.toString();
+
+                    JSONParser parser_last = new JSONParser();
+                    JSONObject json_last = (JSONObject) parser_last.parse(responseString_last);
+                    JSONObject hitsInner_last = (JSONObject) json_last.get("hits");
+                    JSONArray dataArray_last = (JSONArray) hitsInner_last.get("hits");
+                    Volunteer[] oArray_last = new Volunteer[dataArray_last.size()];
+                    JSONObject firstObject_last=null;
+                    try{
+                        firstObject_last = (JSONObject) dataArray_last.get(0);
+                    }catch (Exception e){
+
+                    }
+                    JSONObject data_last = (JSONObject) firstObject_last.get("_source");
+
+                    vList.add(new Volunteer(data_last.get("fname").toString(),data_last.get("lname").toString(),data_last.get("skills").toString(),data_last.get("causes_supported").toString(),
+                            data_last.get("volunteer_experience").toString(),data_last.get("location").toString()));
+
+
+
+                } catch (MalformedURLException e1) {
+                    // TODO Auto-generated catch block
+                    e1.printStackTrace();
+                } catch (IOException e1) {
+                    // TODO Auto-generated catch block
+                    e1.printStackTrace();
+                }
+
+
+            }
 
 
         } catch (MalformedURLException e1) {
@@ -777,7 +848,7 @@ public class Application extends Controller {
             e1.printStackTrace();
         }
 
-        return ok(rankedVolunteers.render());
+        return ok(rankedVolunteers.render(vList));
     }
 
     public String pullfromSqs(){
