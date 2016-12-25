@@ -796,7 +796,6 @@ public class Application extends Controller {
         List<com.amazonaws.services.sqs.model.Message> messages;
         while(true){
             messages = sqs.receiveMessage(receiveMessageRequest).getMessages();
-            System.out.println("AAAAABB"+messages.toString());
             if(!messages.isEmpty() && !messages.get(0).getBody().isEmpty()){
                 break;
             }
@@ -813,6 +812,11 @@ public class Application extends Controller {
                 .withReceiptHandle(messageReceiptHandle));
 
         return messageData;
+    }
+    //send email to volunteer. 
+    public Result contactVolunteer(){
+        sendEmail("an2756@columbia.edu","You have been Contacted by an orgnization! Please check AngelMatch.com. Thanks!","You have been Contacted!");
+        return(ok(thanks.render()));
     }
 
 }
