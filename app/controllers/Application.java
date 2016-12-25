@@ -60,6 +60,7 @@ public class Application extends Controller {
     public Result showOrganizationPage(){
         ArrayList<Event> eventList = new ArrayList<Event>();
         for(int i=0;i<5;i++){
+            // Dummy push as template when an origanization first signs up. Replaced by actual events when added.
             eventList.add(new Event("2:00","4:00","12 Dec 2016","CS, Java","New York","Social Event Name","issues"));
         }
 
@@ -813,7 +814,7 @@ public class Application extends Controller {
 
         return messageData;
     }
-    //send email to volunteer. 
+    //send email to volunteer.
     public Result contactVolunteer(){
         sendEmail("an2756@columbia.edu","You have been Contacted by an orgnization! Please check AngelMatch.com. Thanks!","You have been Contacted!");
         return(ok(thanks.render()));
